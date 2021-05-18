@@ -106,6 +106,11 @@ startingUrl = 'https://www.tripadvisor.com/Hotel_Review-g664891-d845057-Reviews-
 
 
 driver = webdriver.Edge('X:/ProgramData/Anaconda3/msedgedriver.exe')
+#driver = webdriver.Chrome("C:/Users/Zing/OneDrive/GitHub/Python/Iverson's/chromedriver.exe"
+#                          #,chrome_options=chrome_options
+#                         )
+#driver.get(startingUrl)
+
 
 
 #if args.info:
@@ -160,9 +165,10 @@ def scrapeUrls(url):
                     stayDate = review.find('span', class_='_34Xs-BQm').text.strip()
                     text_review = review.find('q', class_='IRsGHoPm')
                     if len(text_review.contents) > 2:
-                        reviewText = str(text_review.contents[0][:-3]) + ' ' + str(text_review.contents[1].text)
+                        #reviewText = str(text_review.contents[0][:-3]) + ' ' + str(text_review.contents[1].text)
                         #reviewText= str(text_review.contents[0][:-3]) 
                         #reviewText = str(text_review.contents[1].text)
+                        reviewText = text_review.text
                     else:
                         reviewText = text_review.text
                                       
@@ -216,9 +222,10 @@ def scrapeUrls(url):
                     stayDate = review.find('span', class_='_34Xs-BQm').text.strip()
                     text_review = review.find('q', class_='IRsGHoPm')
                     if len(text_review.contents) > 2:
-                        reviewText = str(text_review.contents[0][:-3]) + ' ' + str(text_review.contents[1].text)
+                       # reviewText = str(text_review.contents[0][:-3]) + ' ' + str(text_review.contents[1].text)
                         #reviewText= str(text_review.contents[0][:-3]) 
                         #reviewText = str(text_review.contents[1].text)
+                        reviewText = text_review.text
                     else:
                         reviewText = text_review.text
                                       
