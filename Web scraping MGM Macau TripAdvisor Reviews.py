@@ -378,6 +378,70 @@ scrapeUrls(url)
 
 
 
+           
+def scrapeUrls(url): 
+    driver = webdriver.Chrome("C:/Users/Zing/OneDrive/GitHub/Python/Iverson's/chromedriver.exe"
+                          #,chrome_options=chrome_options
+                         )
+    nextPage = True
+    while nextPage:
+        driver.get(url)
+        time.sleep(1)
+        #more = driver.find_elements_by_xpath("//span[contains(text(),'Read more')]")
+        #for x in range(0,len(more)):
+            #try:
+                #driver.execute_script("arguments[0].click();", more[x])
+                #time.sleep(3)
+            #except:
+                #pass
+        page = requests.get(url)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        #results = soup('div', class_='was-ssr-only')
+        try:
+            reviews = soup.find_all('div', class_='_2wrUUKlw _3hFEdNs8')
+        except Exception:
+            continue
+        try:
+                with open(pathToReviews, mode='a', encoding="utf-8") as trip_data:
+                    for review in reviews:
+                        ratingDate = review.find('div', class_='_2fxQ4TOx').text.strip()
+                        #ratingDate = ratingDate.select('div > div')[0].get_text(strip=True)
+                        #ratingDate=ratingDate[ratingDate.index('a'):].split('wrote a review')
+                        #ratingDate=ratingDate[ratingDate.index('a'):]
+                        ratingDate=ratingDate.split('wrote a review ')[1]
+                        stayDate = review.find('span', class_='_34Xs-BQm').text.strip()
+                        text_review = review.find('q', class_='IRsGHoPm')
+                        if len(text_review.contents) > 2:
+                            #reviewText = str(text_review.contents[0][:-3]) + ' ' + str(text_review.contents[1].text)
+                            #reviewText= str(text_review.contents[0][:-3])
+                            #reviewText = str(text_review.contents[1].text)
+                            reviewText = text_review.text
+                        else:
+                            reviewText = text_review.text
+                        reviewerUsername = review.find('a', class_='ui_header_link _1r_My98y').text
+                        # reviewerUsername = reviewerUsername.select('div > div')[0].get_text(strip=True)
+                        rating = review.find('div', class_='nf9vGX55').findChildren('span')
+                        rating = str(rating[0]).split('_')[3].split('0')[0]
+                        ##data_writer = csv.writer(trip_data, delimiter = ',', quotechar = '"', quoting = csv.QUOTE_MINIMAL)
+                        #data_writer.writerow([reviewerUsername, rating, reviewText, ratingDate,stayDate])
+                        print(reviewerUsername)
+                        print(rating)
+                        print(reviewText)
+                        print(stayDate)
+                        print(ratingDate)
+        except:
+            continue
+                        #Go to next page if exists
+            try:
+                unModifiedUrl = str(soup.find('a', class_ = 'ui_button nav next primary',href=True)['href'])
+                url = 'https://www.tripadvisor.com' + unModifiedUrl
+            except:
+                nextPage = False
+                
+                
+url='https://www.tripadvisor.com/Hotel_Review-g664891-d845057-Reviews-MGM_Macau-Macau.html'
+scrapeUrls(url)
+
 
 
 
