@@ -11,11 +11,15 @@ Created on Wed May 19 16:23:40 2021
 
 
 import pandas as pd
-#mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv')
+mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv')
+
+mgm_cotai_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_mgm_cotai_edited.csv')
 
 
-mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
-                                    )
+
+
+#mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
+#                                    )
 
 # Show dataframe
 print(mgm_macau_reviews)
@@ -27,6 +31,10 @@ print(mgm_macau_reviews['review'][0])
 
 
 
+mgm_cotai_reviews.dropna(how='all', inplace = True) 
+print(mgm_cotai_reviews['username'][0])
+print(mgm_cotai_reviews['review'][0])
+
 
  
  
@@ -35,14 +43,23 @@ print(mgm_macau_reviews['review'][0])
 
 
 mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
-lambda x:'Positive' if 3<x else \
-('Natural' if x==3 else\
-('Negative' if 1<=x<3 else\
+lambda x:'Positive' if 2<x else \
+#('Natural' if x==3 else\
+('Negative' if 1<=x<2 else\
 'unknown'))
-    )
+    #)
 
+    
 
+mgm_cotai_reviews['sentiment'] = mgm_cotai_reviews.star.map(\
+lambda x:'Positive' if 2<x else \
+#('Natural' if x==3 else\
+('Negative' if 1<=x<2 else\
+'unknown'))
+    #)
 
+    
+    
 
 import matplotlib.pyplot as plt
 %matplotlib inline
@@ -53,6 +70,7 @@ from nltk.corpus import stopwords
 from nltk import word_tokenize
 #nltk.download('stopwords')
 #nltk.download('punkt')
+#nltk.download('names')
 #nltk.download([
 #"names",
 #"stopwords",
@@ -342,31 +360,40 @@ app.run_server()
 
 
 
-
-
-
-#bigrams-trigrams
-#https://www.geeksforgeeks.org/tf-idf-for-bigrams-trigrams/
+"""
+# Preprocessing v1
 #Here, if we consider only unigrams, then the single word cannot convey the details properly. If we have a word like ‘Machine learning developer’, then the word extracted should be ‘Machine learning’ or ‘Machine learning developer’. The words simply ‘Machine’, ‘learning’ or ‘developer’ will not give the expected result.
+
+"""
 
 
 import re
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
-del STOPWORDS
-STOPWORDS = (stopwords.words('english'))
-newStopWords = ['hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
+
+
+if 'STOPWORDS_sentiment' in locals():
+    del STOPWORDS_sentiment
+    
+STOPWORDS_sentiment = (stopwords.words('english'))
+newStopWords = ['experienced','experience','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
                                      ,'much','visit' , 'many' , 'check','even','way','bit','arrived'
                                      ,'night','casino','service','stayed','got','around','provide','really'
                                      ,'every','even','make','check','took','provided','wynn','staying','booked'
                                      ,'Venetian','trip','made','will', 'went','always','say','came','need'
                                      ,'day','time','u','one','first'
-                                     "0o", "0s", "3a", "3b", "3d", "6b", "6o", "a", "a1", "a2", "a3", "a4", "ab", "able", "about", "above", "abst", "ac", "accordance", "according", "accordingly", "across", "act", "actually", "ad", "added", "adj", "ae", "af", "affected", "affecting", "affects", "after", "afterwards", "ag", "again", "against", "ah", "ain", "ain't", "aj", "al", "all", "allow", "allows", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and", "announce", "another", "any", "anybody", "anyhow", "anymore", "anyone", "anything", "anyway", "anyways", "anywhere", "ao", "ap", "apart", "apparently", "appear", "appreciate", "appropriate", "approximately", "ar", "are", "aren", "arent", "aren't", "arise", "around", "as", "a's", "aside", "ask", "asking", "associated", "at", "au", "auth", "av", "available", "aw", "away", "awfully", "ax", "ay", "az", "b", "b1", "b2", "b3", "ba", "back", "bc", "bd", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "begin", "beginning", "beginnings", "begins", "behind", "being", "believe", "below", "beside", "besides", "best", "better", "between", "beyond", "bi", "bill", "biol", "bj", "bk", "bl", "bn", "both", "bottom", "bp", "br", "brief", "briefly", "bs", "bt", "bu", "but", "bx", "by", "c", "c1", "c2", "c3", "ca", "call", "came", "can", "cannot", "cant", "can't", "cause", "causes", "cc", "cd", "ce", "certain", "certainly", "cf", "cg", "ch", "changes", "ci", "cit", "cj", "cl", "clearly", "cm", "c'mon", "cn", "co", "com", "come", "comes", "con", "concerning", "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could", "couldn", "couldnt", "couldn't", "course", "cp", "cq", "cr", "cry", "cs", "c's", "ct", "cu", "currently", "cv", "cx", "cy", "cz", "d", "d2", "da", "date", "dc", "dd", "de", "definitely", "describe", "described", "despite", "detail", "df", "di", "did", "didn", "didn't", "different", "dj", "dk", "dl", "do", "does", "doesn", "doesn't", "doing", "don", "done", "don't", "down", "downwards", "dp", "dr", "ds", "dt", "du", "due", "during", "dx", "dy", "e", "e2", "e3", "ea", "each", "ec", "ed", "edu", "ee", "ef", "effect", "eg", "ei", "eight", "eighty", "either", "ej", "el", "eleven", "else", "elsewhere", "em", "empty", "en", "end", "ending", "enough", "entirely", "eo", "ep", "eq", "er", "es", "especially", "est", "et", "et-al", "etc", "eu", "ev", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly", "example", "except", "ey", "f", "f2", "fa", "far", "fc", "few", "ff", "fi", "fifteen", "fifth", "fify", "fill", "find", "fire", "first", "five", "fix", "fj", "fl", "fn", "fo", "followed", "following", "follows", "for", "former", "formerly", "forth", "forty", "found", "four", "fr", "from", "front", "fs", "ft", "fu", "full", "further", "furthermore", "fy", "g", "ga", "gave", "ge", "get", "gets", "getting", "gi", "give", "given", "gives", "giving", "gj", "gl", "go", "goes", "going", "gone", "got", "gotten", "gr", "greetings", "gs", "gy", "h", "h2", "h3", "had", "hadn", "hadn't", "happens", "hardly", "has", "hasn", "hasnt", "hasn't", "have", "haven", "haven't", "having", "he", "hed", "he'd", "he'll", "hello", "help", "hence", "her", "here", "hereafter", "hereby", "herein", "heres", "here's", "hereupon", "hers", "herself", "hes", "he's", "hh", "hi", "hid", "him", "himself", "his", "hither", "hj", "ho", "home", "hopefully", "how", "howbeit", "however", "how's", "hr", "hs", "http", "hu", "hundred", "hy", "i", "i2", "i3", "i4", "i6", "i7", "i8", "ia", "ib", "ibid", "ic", "id", "i'd", "ie", "if", "ig", "ignored", "ih", "ii", "ij", "il", "i'll", "im", "i'm", "immediate", "immediately", "importance", "important", "in", "inasmuch", "inc", "indeed", "index", "indicate", "indicated", "indicates", "information", "inner", "insofar", "instead", "interest", "into", "invention", "inward", "io", "ip", "iq", "ir", "is", "isn", "isn't", "it", "itd", "it'd", "it'll", "its", "it's", "itself", "iv", "i've", "ix", "iy", "iz", "j", "jj", "jr", "js", "jt", "ju", "just", "k", "ke", "keep", "keeps", "kept", "kg", "kj", "km", "know", "known", "knows", "ko", "l", "l2", "la", "largely", "last", "lately", "later", "latter", "latterly", "lb", "lc", "le", "least", "les", "less", "lest", "let", "lets", "let's", "lf", "like", "liked", "likely", "line", "little", "lj", "ll", "ll", "ln", "lo", "look", "looking", "looks", "los", "lr", "ls", "lt", "ltd", "m", "m2", "ma", "made", "mainly", "make", "makes", "many", "may", "maybe", "me", "mean", "means", "meantime", "meanwhile", "merely", "mg", "might", "mightn", "mightn't", "mill", "million", "mine", "miss", "ml", "mn", "mo", "more", "moreover", "most", "mostly", "move", "mr", "mrs", "ms", "mt", "mu", "much", "mug", "must", "mustn", "mustn't", "my", "myself", "n", "n2", "na", "name", "namely", "nay", "nc", "nd", "ne", "near", "nearly", "necessarily", "necessary", "need", "needn", "needn't", "needs", "neither", "never", "nevertheless", "new", "next", "ng", "ni", "nine", "ninety", "nj", "nl", "nn", "no", "nobody", "non", "none", "nonetheless", "noone", "nor", "normally", "nos", "not", "noted", "nothing", "novel", "now", "nowhere", "nr", "ns", "nt", "ny", "o", "oa", "ob", "obtain", "obtained", "obviously", "oc", "od", "of", "off", "often", "og", "oh", "oi", "oj", "ok", "okay", "ol", "old", "om", "omitted", "on", "once", "one", "ones", "only", "onto", "oo", "op", "oq", "or", "ord", "os", "ot", "other", "others", "otherwise", "ou", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "ow", "owing", "own", "ox", "oz", "p", "p1", "p2", "p3", "page", "pagecount", "pages", "par", "part", "particular", "particularly", "pas", "past", "pc", "pd", "pe", "per", "perhaps", "pf", "ph", "pi", "pj", "pk", "pl", "placed", "please", "plus", "pm", "pn", "po", "poorly", "possible", "possibly", "potentially", "pp", "pq", "pr", "predominantly", "present", "presumably", "previously", "primarily", "probably", "promptly", "proud", "provides", "ps", "pt", "pu", "put", "py", "q", "qj", "qu", "que", "quickly", "quite", "qv", "r", "r2", "ra", "ran", "rather", "rc", "rd", "re", "readily", "really", "reasonably", "recent", "recently", "ref", "refs", "regarding", "regardless", "regards", "related", "relatively", "research", "research-articl", "respectively", "resulted", "resulting", "results", "rf", "rh", "ri", "right", "rj", "rl", "rm", "rn", "ro", "rq", "rr", "rs", "rt", "ru", "run", "rv", "ry", "s", "s2", "sa", "said", "same", "saw", "say", "saying", "says", "sc", "sd", "se", "sec", "second", "secondly", "section", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen", "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "sf", "shall", "shan", "shan't", "she", "shed", "she'd", "she'll", "shes", "she's", "should", "shouldn", "shouldn't", "should've", "show", "showed", "shown", "showns", "shows", "si", "side", "significant", "significantly", "similar", "similarly", "since", "sincere", "six", "sixty", "sj", "sl", "slightly", "sm", "sn", "so", "some", "somebody", "somehow", "someone", "somethan", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon", "sorry", "sp", "specifically", "specified", "specify", "specifying", "sq", "sr", "ss", "st", "still", "stop", "strongly", "sub", "substantially", "successfully", "such", "sufficiently", "suggest", "sup", "sure", "sy", "system", "sz", "t", "t1", "t2", "t3", "take", "taken", "taking", "tb", "tc", "td", "te", "tell", "ten", "tends", "tf", "th", "than", "thank", "thanks", "thanx", "that", "that'll", "thats", "that's", "that've", "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "thered", "therefore", "therein", "there'll", "thereof", "therere", "theres", "there's", "thereto", "thereupon", "there've", "these", "they", "theyd", "they'd", "they'll", "theyre", "they're", "they've", "thickv", "thin", "think", "third", "this", "thorough", "thoroughly", "those", "thou", "though", "thoughh", "thousand", "three", "throug", "through", "throughout", "thru", "thus", "ti", "til", "tip", "tj", "tl", "tm", "tn", "to", "together", "too", "took", "top", "toward", "towards", "tp", "tq", "tr", "tried", "tries", "truly", "try", "trying", "ts", "t's", "tt", "tv", "twelve", "twenty", "twice", "two", "tx", "u", "u201d", "ue", "ui", "uj", "uk", "um", "un", "under", "unfortunately", "unless", "unlike", "unlikely", "until", "unto", "uo", "up", "upon", "ups", "ur", "us", "use", "used", "useful", "usefully", "usefulness", "uses", "using", "usually", "ut", "v", "va", "value", "various", "vd", "ve", "ve", "very", "via", "viz", "vj", "vo", "vol", "vols", "volumtype", "vq", "vs", "vt", "vu", "w", "wa", "want", "wants", "was", "wasn", "wasnt", "wasn't", "way", "we", "wed", "we'd", "welcome", "well", "we'll", "well-b", "went", "were", "we're", "weren", "werent", "weren't", "we've", "what", "whatever", "what'll", "whats", "what's", "when", "whence", "whenever", "when's", "where", "whereafter", "whereas", "whereby", "wherein", "wheres", "where's", "whereupon", "wherever", "whether", "which", "while", "whim", "whither", "who", "whod", "whoever", "whole", "who'll", "whom", "whomever", "whos", "who's", "whose", "why", "why's", "wi", "widely", "will", "willing", "wish", "with", "within", "without", "wo", "won", "wonder", "wont", "won't", "words", "world", "would", "wouldn", "wouldnt", "wouldn't", "www", "x", "x1", "x2", "x3", "xf", "xi", "xj", "xk", "xl", "xn", "xo", "xs", "xt", "xv", "xx", "y", "y2", "yes", "yet", "yj", "yl", "you", "youd", "you'd", "you'll", "your", "youre", "you're", "yours", "yourself", "yourselves", "you've", "yr", "ys", "yt", "z", "zero", "zi", "zz"
-                                     ]
-STOPWORDS.extend(newStopWords)
+                                     "0o", "0s", "3a", "3b", "3d", "6b", "6o", "a", "a1", "a2", "a3", "a4", "ab", "able", "about", "above", "abst", "ac", "accordance", "according", "accordingly", "across", "act", "actually", "ad", "added", "adj", "ae", "af", "affected", "affecting", "affects", "after", "afterwards", "ag", "again", "against", "ah", "ain", "ain't", "aj", "al", "all", "allow", "allows", "almost", "alone", "along", "already", "also", "although", "always", "am", "among", "amongst", "amoungst", "amount", "an", "and", "announce", "another", "any", "anybody", "anyhow", "anymore", "anyone", "anything", "anyway", "anyways", "anywhere", "ao", "ap", "apart", "apparently", "appear", "appreciate", "appropriate", "approximately", "ar", "are", "aren", "arent", "aren't", "arise", "around", "as", "a's", "aside", "ask", "asking", "associated", "at", "au", "auth", "av", "available", "aw", "away", "awfully", "ax", "ay", "az", "b", "b1", "b2", "b3", "ba", "back", "bc", "bd", "be", "became", "because", "become", "becomes", "becoming", "been", "before", "beforehand", "begin", "beginning", "beginnings", "begins", "behind", "being", "believe", "below", "beside", "besides", "best", "better", "between", "beyond", "bi", "bill", "biol", "bj", "bk", "bl", "bn", "both", "bottom", "bp", "br", "brief", "briefly", "bs", "bt", "bu", "but", "bx", "by", "c", "c1", "c2", "c3", "ca", "call", "came", "can", "cannot", "cant", "can't", "cause", "causes", "cc", "cd", "ce", "certain", "certainly", "cf", "cg", "ch", "changes", "ci", "cit", "cj", "cl", "clearly", "cm", "c'mon", "cn", "co", "com", "come", "comes", "con", "concerning", "consequently", "consider", "considering", "contain", "containing", "contains", "corresponding", "could", "couldn", "couldnt", "couldn't", "course", "cp", "cq", "cr", "cry", "cs", "c's", "ct", "cu", "currently", "cv", "cx", "cy", "cz", "d", "d2", "da", "date", "dc", "dd", "de", "definitely", "describe", "described", "despite", "detail", "df", "di", "did", "didn", "didn't", "different", "dj", "dk", "dl", "do", "does", "doesn", "doesn't", "doing", "don", "done", "don't", "down", "downwards", "dp", "dr", "ds", "dt", "du", "due", "during", "dx", "dy", "e", "e2", "e3", "ea", "each", "ec", "ed", "edu", "ee", "ef", "effect", "eg", "ei", "eight", "eighty", "either", "ej", "el", "eleven", "else", "elsewhere", "em", "empty", "en", "end", "ending", "enough", "entirely", "eo", "ep", "eq", "er", "es", "especially", "est", "et", "et-al", "etc", "eu", "ev", "even", "ever", "every", "everybody", "everyone", "everything", "everywhere", "ex", "exactly", "example", "except", "ey", "f", "f2", "fa", "far", "fc", "few", "ff", "fi", "fifteen", "fifth", "fify", "fill", "find", "fire", "first", "five", "fix", "fj", "fl", "fn", "fo", "followed", "following", "follows", "for", "former", "formerly", "forth", "forty", "found", "four", "fr", "from", "front", "fs", "ft", "fu", "full", "further", "furthermore", "fy", "g", "ga", "gave", "ge", "get", "gets", "getting", "gi", "give", "given", "gives", "giving", "gj", "gl", "go", "goes", "going", "gone", "got", "gotten", "gr", "greetings", "gs", "gy", "h", "h2", "h3", "had", "hadn", "hadn't", "happens", "hardly", "has", "hasn", "hasnt", "hasn't", "have", "haven", "haven't", "having", "he", "hed", "he'd", "he'll", "hello", "help", "hence", "her", "here", "hereafter", "hereby", "herein", "heres", "here's", "hereupon", "hers", "herself", "hes", "he's", "hh", "hi", "hid", "him", "himself", "his", "hither", "hj", "ho", "home", "hopefully", "how", "howbeit", "however", "how's", "hr", "hs", "http", "hu", "hundred", "hy", "i", "i2", "i3", "i4", "i6", "i7", "i8", "ia", "ib", "ibid", "ic", "id", "i'd", "ie", "if", "ig", "ignored", "ih", "ii", "ij", "il", "i'll", "im", "i'm", "immediate", "immediately", "importance", "important", "in", "inasmuch", "inc", "indeed", "index", "indicate", "indicated", "indicates", "information", "inner", "insofar", "instead", "interest", "into", "invention", "inward", "io", "ip", "iq", "ir", "is", "isn", "isn't", "it", "itd", "it'd", "it'll", "its", "it's", "itself", "iv", "i've", "ix", "iy", "iz", "j", "jj", "jr", "js", "jt", "ju", "just", "k", "ke", "keep", "keeps", "kept", "kg", "kj", "km", "know", "known", "knows", "ko", "l", "l2", "la", "largely", "last", "lately", "later", "latter", "latterly", "lb", "lc", "le", "least", "les", "less", "lest", "let", "lets", "let's", "lf", "like", "liked", "likely", "line", "little", "lj", "ll", "ll", "ln", "lo", "look", "looking", "looks", "los", "lr", "ls", "lt", "ltd", "m", "m2", "ma", "made", "mainly", "make", "makes", "many", "may", "maybe", "me", "mean", "means", "meantime", "meanwhile", "merely", "mg", "might", "mightn", "mightn't", "mill", "million", "mine", "miss", "ml", "mn", "mo", "more", "moreover", "most", "mostly", "move", "mr", "mrs", "ms", "mt", "mu", "much", "mug", "must", "mustn", "mustn't", "my", "myself", "n", "n2", "na", "name", "namely", "nay", "nc", "nd", "ne", "near", "nearly", "necessarily", "necessary", "need", "needn", "needn't", "needs", "neither", "never", "nevertheless", "new", "next", "ng", "ni", "nine", "ninety", "nj", "nl", "nn", "no", "nobody", "non", "none", "nonetheless", "noone", "nor", "normally", "nos", "not", "noted", "nothing", "novel", "now", "nowhere", "nr", "ns", "nt", "ny", "o", "oa", "ob", "obtain", "obtained", "obviously", "oc", "od", "of", "off", "often", "og", "oh", "oi", "oj", "ok", "okay", "ol", "old", "om", "omitted", "on", "once", "one", "ones", "only", "onto", "oo", "op", "oq", "or", "ord", "os", "ot", "other", "others", "otherwise", "ou", "ought", "our", "ours", "ourselves", "out", "outside", "over", "overall", "ow", "owing", "own", "ox", "oz", "p", "p1", "p2", "p3", "page", "pagecount", "pages", "par", "part", "particular", "particularly", "pas", "past", "pc", "pd", "pe", "per", "perhaps", "pf", "ph", "pi", "pj", "pk", "pl", "placed", "please", "plus", "pm", "pn", "po", "poorly", "possible", "possibly", "potentially", "pp", "pq", "pr", "predominantly", "present", "presumably", "previously", "primarily", "probably", "promptly", "proud", "provides", "ps", "pt", "pu", "put", "py", "q", "qj", "qu", "que", "quickly", "quite", "qv", "r", "r2", "ra", "ran", "rather", "rc", "rd", "re", "readily", "really", "reasonably", "recent", "recently", "ref", "refs", "regarding", "regardless", "regards", "related", "relatively", "research", "research-articl", "respectively", "resulted", "resulting", "results", "rf", "rh", "ri", "right", "rj", "rl", "rm", "rn", "ro", "rq", "rr", "rs", "rt", "ru", "run", "rv", "ry", "s", "s2", "sa", "said", "same", "saw", "say", "saying", "says", "sc", "sd", "se", "sec", "second", "secondly", "section", "see", "seeing", "seem", "seemed", "seeming", "seems", "seen", "self", "selves", "sensible", "sent", "serious", "seriously", "seven", "several", "sf", "shall", "shan", "shan't", "she", "shed", "she'd", "she'll", "shes", "she's", "should", "shouldn", "shouldn't", "should've", "show", "showed", "shown", "showns", "shows", "si", "side", "significant", "significantly", "similar", "similarly", "since", "sincere", "six", "sixty", "sj", "sl", "slightly", "sm", "sn", "so", "some", "somebody", "somehow", "someone", "somethan", "something", "sometime", "sometimes", "somewhat", "somewhere", "soon", "sorry", "sp", "specifically", "specified", "specify", "specifying", "sq", "sr", "ss", "st", "still", "stop", "strongly", "sub", "substantially", "successfully", "such", "sufficiently", "suggest", "sup", "sure", "sy", "system", "sz", "t", "t1", "t2", "t3", "take", "taken", "taking", "tb", "tc", "td", "te", "tell", "ten", "tends", "tf", "th", "than", "thank", "thanks", "thanx", "that", "that'll", "thats", "that's", "that've", "the", "their", "theirs", "them", "themselves", "then", "thence", "there", "thereafter", "thereby", "thered", "therefore", "therein", "there'll", "thereof", "therere", "theres", "there's", "thereto", "thereupon", "there've", "these", "they", "theyd", "they'd", "they'll", "theyre", "they're", "they've", "thickv", "thin", "think", "third", "this", "thorough", "thoroughly", "those", "thou", "though", "thoughh", "thousand", "three", "throug", "through", "throughout", "thru", "thus", "ti", "til", "tip", "tj", "tl", "tm", "tn", "to", "together", "too", "took", "top", "toward", "towards", "tp", "tq", "tr", "tried", "tries", "truly", "try", "trying", "ts", "t's", "tt", "tv", "twelve", "twenty", "twice", "two", "tx", "u", "u201d", "ue", "ui", "uj", "uk", "um", "un", "under", "unfortunately", "unless", "unlike", "unlikely", "until", "unto", "uo", "up", "upon", "ups", "ur", "us", "use", "used", "useful", "usefully", "usefulness", "uses", "using", "usually", "ut", "v", "va", "value", "various", "vd", "ve", "ve", "very", "via", "viz", "vj", "vo", "vol", "vols", "volumtype", "vq", "vs", "vt", "vu", "w", "wa", "want", "wants", "was", "wasn", "wasnt", "wasn't", "way", "we", "wed", "we'd", "welcome", "well", "we'll", "well-b", "went", "were", "we're", "weren", "werent", "weren't", "we've", "what", "whatever", "what'll", "whats", "what's", "when", "whence", "whenever", "when's", "where", "whereafter", "whereas", "whereby", "wherein", "wheres", "where's", "whereupon", "wherever", "whether", "which", "while", "whim", "whither", "who", "whod", "whoever", "whole", "who'll", "whom", "whomever", "whos", "who's", "whose", "why", "why's", "wi", "widely", "will", "willing", "wish", "with", "within", "without", "wo", "won", "wonder", "wont", "won't", "words", "world", "would", "wouldn", "wouldnt", "wouldn't", "www", "x", "x1", "x2", "x3", "xf", "xi", "xj", "xk", "xl", "xn", "xo", "xs", "xt", "xv", "xx", "y", "y2", "yes", "yet", "yj", "yl", "you", "youd", "you'd", "you'll", "your", "youre", "you're", "yours", "yourself", "yourselves", "you've", "yr", "ys", "yt", "z", "zero", "zi", "zz"]
+STOPWORDS_sentiment.extend(newStopWords)
 
 
+from nltk.corpus import names
+import random
+# Construct a list of classified names, using the names corpus.
+namelist = [(name) for name in names.words('male.txt')] + [(name) for name in names.words('female.txt')]
+random.seed(123456)
+random.shuffle(namelist)
+    
 
 
 #geeksforgeeks.org/tf-idf-for-bigrams-trigrams/    
@@ -376,7 +403,16 @@ STOPWORDS.extend(newStopWords)
 #Inverse Document Frequency(IDF) = log( (total number of documents)/(number of documents with term t))
 #TF.IDF = (TF).(IDF)
 
+
+
+
+
+"""
 # Preprocessing
+#bigrams-trigrams
+#https://www.geeksforgeeks.org/tf-idf-for-bigrams-trigrams/
+"""
+
 def remove_string_special_characters(s):
       
     # removes special characters with ' '
@@ -397,7 +433,7 @@ def remove_string_special_characters(s):
 for i, line in enumerate(mgm_macau_reviews.review):
     mgm_macau_reviews.review[i] = ' '.join([x for 
         x in nltk.word_tokenize(line) if
-        (x.lower() not in newStopWords)])
+        (x.lower() not in STOPWORDS_sentiment) and ( x.lower() not in namelist )])
     #print(i, line)
 
          
@@ -426,8 +462,6 @@ for i, line in enumerate(mgm_macau_reviews.review):
 
 
 
-
-
 # Getting bigrams 
 vectorizer = CountVectorizer(ngram_range =(2, 2))
 X1 = vectorizer.fit_transform(mgm_macau_reviews.review) 
@@ -452,4 +486,299 @@ words = (ranking.sort_values('rank', ascending = False))
 print ("\n\nWords : \n", words.head(50))
 
 
+
 #https://kanoki.org/2019/11/06/python-detect-and-translate-language/
+
+
+
+
+def get_word_features(wordlist):
+  wordlist = nltk.FreqDist(wordlist)
+  word_features = [w for (w, c) in wordlist.most_common(200)] 
+  return word_features  
+
+
+
+
+
+
+
+
+
+
+
+
+
+# BeautifulSoup to easily remove HTML tags
+from bs4 import BeautifulSoup 
+
+# RegEx for removing non-letter characters
+import re
+
+from nltk.stem.porter import *
+#wordcoreextractor
+stemmer = PorterStemmer()
+
+
+
+
+debug=0
+def log(text):
+    if debug>0:
+        print(text)
+
+def review_to_words(review):
+    """Convert a raw review string into a sequence of words."""
+    
+    # TODO: Remove HTML tags and non-letters,
+    #       convert to lowercase, tokenize,
+    #       remove stopwords and stem
+    log('Raw input :')
+    log(review)
+    
+    # remove HTML tags
+    review=BeautifulSoup(review, "html5lib").get_text()
+    #log('\nHTML tags removed')
+    #log(review)
+    
+    # remove punctuation and numeric
+    #review = re.sub(r"[^a-zA-Z0-9]", " ", review) 
+    review = re.sub(r"[^a-zA-Z]", " ", review) 
+    log('\n Punctuation removed')
+    log(review)
+    
+    # lowercase    
+    review = review.lower()
+    
+    # tokenize
+    review = nltk.word_tokenize(review)
+    log('\n Tokenized')
+    log(review)
+    
+    # remove stop words
+    #review = [w for w in review if w not in stopwords.words("english")]
+    review = [w for w in review if w not in STOPWORDS_sentiment and w not in namelist]
+    log('\n Stop words removed')
+    log(review)
+    
+    # stemming
+    #review = [PorterStemmer().stem(w) for w in review]
+    log('\n Stemmed')
+    log(review)
+    
+    log('\n\n')
+    #words=[]
+    
+    # Return final list of words
+    return review
+
+
+
+
+import pickle
+import os
+
+
+
+
+cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
+os.makedirs(cache_dir, exist_ok=True)  # ensure cache directory exists
+
+def preprocess_data(data_train,data_test,
+                    cache_dir=cache_dir, cache_file="preprocessed_mgm_reviewdata.pkl"):
+    """Convert each review to words; read from cache if available."""
+
+    # If cache_file is not None, try to read from it first
+    cache_data = None
+    if cache_file is not None:
+        try:
+            with open(os.path.join(cache_dir, cache_file), "rb") as f:
+                cache_data = pickle.load(f)
+            print("Read preprocessed data from cache file:", cache_file)
+        except:
+            pass  # unable to read from cache, but that's okay
+    
+    # If cache is missing, then do the heavy lifting
+    if cache_data is None:
+        # Preprocess training and test data to obtain words for each review
+        words_train = list(map(review_to_words, data_train))
+        words_test = list(map(review_to_words, data_test))
+        
+        # Write to cache file for future runs
+        if cache_file is not None:
+            cache_data = dict(words_train=words_train, words_test=words_test,)
+            with open(os.path.join(cache_dir, cache_file), "wb") as f:
+                pickle.dump(cache_data, f)
+            print("Wrote preprocessed data to cache file:", cache_file)
+    else:
+        # Unpack data loaded from cache file
+        #words_train = (cache_data['words_train'])
+        words_train, words_test = (cache_data['words_train'],
+                cache_data['words_test'])
+    
+    return words_train, words_test
+
+
+# Preprocess data
+words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
+
+
+os.remove (os.path.join(cache_dir,'preprocessed_mgm_reviewdata.pkl'))
+
+# Take a look at a sample
+print("\n--- Raw review ---")
+print(mgm_macau_reviews['review'][0])
+print("\n--- Preprocessed words ---")
+print(words_train[0])
+print("\n--- Label ---")
+print(mgm_macau_reviews["sentiment"][1])
+
+
+print("\n--- Raw review ---")
+print(mgm_cotai_reviews['review'][0])
+print("\n--- Preprocessed words ---")
+print(words_test[0])
+print("\n--- Label ---")
+print(mgm_cotai_reviews["sentiment"][1])
+
+
+
+#remove names
+#from nltk.tag.stanford import StanfordNERTagger
+#st = StanfordNERTagger("Z:/MGM/My work/Python/NLP/classifiers/english.all.3class.distsim.crf.ser.gz"
+#                       , "Z:/MGM/My work/Python/NLP/jar/stanford-ner.jar")
+#text = """The front desk staff were super nice. You experienced great service right after you stepped into the lobby. Jason was the one who served us, super friendly. We got our room upgraded for free, it was so nice and warm-hearted"""
+#for sent in nltk.sent_tokenize(text):
+#    tokens = nltk.tokenize.word_tokenize(text)
+#    tags = st.tag(tokens)
+#    for tag in tags:
+#        if tag[1]=='PERSON': print(tag)
+
+
+
+"""
+# Post-processing
+# Feature Extraction
+#Extracting Bag-of-Words 
+#Compute Bag-of-Words features¶
+https://dinghe.github.io/sentiment_analysis.html
+"""
+
+
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.externals import joblib
+# joblib is an enhanced version of pickle that is more efficient for storing NumPy arrays
+
+def extract_BoW_features(words_train, words_test, vocabulary_size=5000,
+                         cache_dir=cache_dir, cache_file="bow_features.pkl"):
+    """Extract Bag-of-Words for a given set of documents, already preprocessed into words."""
+    
+    # If cache_file is not None, try to read from it first
+    cache_data = None
+    if cache_file is not None:
+        try:
+            with open(os.path.join(cache_dir, cache_file), "rb") as f:
+                cache_data = joblib.load(f)
+            print("Read features from cache file:", cache_file)
+        except:
+            pass  # unable to read from cache, but that's okay
+    
+    # If cache is missing, then do the heavy lifting
+    if cache_data is None:
+        # TODO: Fit a vectorizer to training documents and use it to transform them
+        # NOTE: Training documents have already been preprocessed and tokenized into words;
+        #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
+        vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=False,max_features=5000)
+        features_train = vectorizer.fit_transform(words_train).toarray()
+
+        # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
+        features_test = vectorizer.fit_transform(words_test).toarray()
+        
+        # NOTE: Remember to convert the features using .toarray() for a compact representation
+        
+        # Write to cache file for future runs (store vocabulary as well)
+        if cache_file is not None:
+            vocabulary = vectorizer.vocabulary_
+            cache_data = dict(features_train=features_train, features_test=features_test,
+                             vocabulary=vocabulary)
+            with open(os.path.join(cache_dir, cache_file), "wb") as f:
+                joblib.dump(cache_data, f)
+            print("Wrote features to cache file:", cache_file)
+    else:
+        # Unpack data loaded from cache file
+        features_train, features_test, vocabulary = (cache_data['features_train'],
+                cache_data['features_test'], cache_data['vocabulary'])
+    
+    # Return both the extracted features as well as the vocabulary
+    return features_train, features_test, vocabulary
+
+
+# Extract Bag of Words features for both training and test datasets
+features_train, features_test, vocabulary = extract_BoW_features(words_train, words_test)
+
+# Inspect the vocabulary that was computed
+print("Vocabulary: {} words".format(len(vocabulary)))
+
+#import random
+print("Sample words: {}".format(random.sample(list(vocabulary.keys()), 8)))
+
+# Print sample
+print("\n--- Preprocessed words ---")
+print(words_train[0])
+print("\n--- Bag-of-Words features ---")
+print(features_train[0])
+print("\n--- Label ---")
+print(mgm_cotai_reviews["sentiment"][0])
+
+
+# Putting all together
+print("\n--- Raw review ---")
+print(mgm_macau_reviews['review'][0])
+print("\n--- Preprocessed words ---")
+print(words_train[0])
+print("\n--- Bag-of-Words features ---")
+print(features_train[0])
+print("\n--- Label ---")
+print(mgm_macau_reviews["sentiment"][1])
+
+
+
+#[index for index in features_train[5] if index != 0]
+
+
+# Plot the BoW feature vector for a training document
+plt.plot(features_train[5,:])
+plt.xlabel('Word')
+plt.ylabel('Count')
+plt.show()
+
+# Find number of occurrences for each word in the training set
+word_freq = features_train.sum(axis=0)
+
+# Sort it in descending order
+sorted_word_freq = np.sort(word_freq)[::-1]
+
+# Plot 
+plt.plot(sorted_word_freq)
+plt.gca().set_xscale('log')
+plt.gca().set_yscale('log')
+plt.xlabel('Rank')
+plt.ylabel('Number of occurrences')
+plt.show()
+
+
+
+
+
+
+Now the question - why Naive Bayes?
+You chose to study Naive Bayes because of the way it is designed and developed. Text data has some practicle and sophisticated features which are best mapped to Naive Bayes provided you are not considering Neural Nets. Besides, it's easy to interpret and does not create the notion of a blackbox model.
+Naive Bayes suffers from a certain disadvantage as well:
+The main limitation of Naive Bayes is the assumption of independent predictors. In real life, it is almost impossible that you get a set of predictors which are entirely independent.
+Why is sentiment analysis so important?
+Sentiment analysis solves a number of genuine business problems:
+It helps to predict customer behavior for a particular product.
+It can help to test the adaptability of a product.
+Automates the task of customer preference reports.
+It can easily automate the process of determining how well did a movie run by analyzing the sentiments behind the movie's reviews from a number of platforms.
+And many more!
