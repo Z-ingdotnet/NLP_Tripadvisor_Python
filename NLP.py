@@ -18,8 +18,12 @@ mgm_cotai_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_mgm_cotai_edi
 
 
 
-#mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
-#                                    )
+mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
+                                   )
+
+mgm_cotai_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_mgm_cotai_edited.csv'#, index_col=0
+                                   )
+
 
 # Show dataframe
 print(mgm_macau_reviews)
@@ -42,24 +46,32 @@ print(mgm_cotai_reviews['review'][0])
 #df['sentiment'] = df.apply(lambda row: row.Score1 + row.Score2, axis = 1) 
 
 
-mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
-lambda x:'Positive' if 2<x else \
+#mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
+#lambda x:'Positive' if 2<x else \
 #('Natural' if x==3 else\
-('Negative' if 1<=x<2 else\
-'unknown'))
-    #)
+#('Negative' if 1<=x<2 else\
+#'unknown'))
+#    #)
 
-    
+ mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
+lambda x: '1' if 2<x else \
+'-1' )
+
+
+#mgm_cotai_reviews['sentiment'] = mgm_cotai_reviews.star.map(\
+#lambda x:'Positive' if 2<x else \
+##('Natural' if x==3 else\
+#('Negative' if 1<=x<2 else\
+#'unknown'))
+#    #)
+
+mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
+lambda x: '1' if 2<x else \
+'-1' )
 
 mgm_cotai_reviews['sentiment'] = mgm_cotai_reviews.star.map(\
-lambda x:'Positive' if 2<x else \
-#('Natural' if x==3 else\
-('Negative' if 1<=x<2 else\
-'unknown'))
-    #)
-
-    
-    
+lambda x: '1' if 2<x else \
+'-1' )   
 
 import matplotlib.pyplot as plt
 %matplotlib inline
@@ -363,7 +375,6 @@ app.run_server()
 """
 # Preprocessing v1
 #Here, if we consider only unigrams, then the single word cannot convey the details properly. If we have a word like ‘Machine learning developer’, then the word extracted should be ‘Machine learning’ or ‘Machine learning developer’. The words simply ‘Machine’, ‘learning’ or ‘developer’ will not give the expected result.
-
 """
 
 
@@ -517,7 +528,7 @@ import re
 
 from nltk.stem.porter import *
 #wordcoreextractor
-stemmer = PorterStemmer()
+#stemmer = PorterStemmer()
 
 
 
@@ -557,12 +568,19 @@ def review_to_words(review):
     
     # remove stop words
     #review = [w for w in review if w not in stopwords.words("english")]
-    review = [w for w in review if w not in STOPWORDS_sentiment and w not in namelist]
+    review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
     log('\n Stop words removed')
     log(review)
     
+    # loop for stemming each word 
+    # in string array at ith row  
     # stemming
-    #review = [PorterStemmer().stem(w) for w in review]
+    #review = [PorterStemmer().stem(w) for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
+  
+    #review = [stemmer.stem(w) for w in review
+                ##if not w in set(stopwords.words('english'))
+                #if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])
+                #] 
     log('\n Stemmed')
     log(review)
     
@@ -574,15 +592,15 @@ def review_to_words(review):
 
 
 
-
 import pickle
 import os
 
 
-
-
-cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
+cache_dir = os.path.join("C:/Users/Zing/OneDrive/GitHub/Python/NLP//bin/","cache", "sentiment_analysis")  # where to store cache files
 os.makedirs(cache_dir, exist_ok=True)  # ensure cache directory exists
+
+#cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
+#os.makedirs(cache_dir, exist_ok=True)  # ensure cache directory exists
 
 def preprocess_data(data_train,data_test,
                     cache_dir=cache_dir, cache_file="preprocessed_mgm_reviewdata.pkl"):
@@ -769,12 +787,47 @@ plt.show()
 
 
 
+"""
+#Normalize feature vectors
+https://dinghe.github.io/sentiment_analysis.html
+"""
+
+import sklearn.preprocessing as pr
+
+# TODO: Normalize BoW features in training and test set
+features_train=pr.normalize(features_train, norm='l2',copy=False)
+features_test=pr.normalize(features_test, norm='l2',copy=False)
+
+[index for index in features_train[5] if index != 0]
 
 
+"""
+#ML Classification using BoW features
+https://dinghe.github.io/sentiment_analysis.html
+"""
+
+
+
+from sklearn.naive_bayes import GaussianNB
+
+# TODO: Train a Guassian Naive Bayes classifier
+clf1 = GaussianNB().fit(features_train,mgm_macau_reviews.sentiment)
+
+# Calculate the mean accuracy score on training and test sets
+print("[{}] Accuracy: train = {}, test = {}".format(
+        clf1.__class__.__name__,
+        clf1.score(features_train,mgm_macau_reviews.sentiment)
+        ,clf1.score(features_test,mgm_cotai_reviews.sentiment)
+        ))
+
+#You and I would have understood that sentence in a fraction of a second. But machines simply cannot process text data in raw form. They need us to break down the text into a numerical format that’s easily readable by the machine (the idea behind Natural Language Processing!).
+
+#https://www.datacamp.com/community/tutorials/simplifying-sentiment-analysis-python
 #Now the question - why Naive Bayes?
 #You chose to study Naive Bayes because of the way it is designed and developed. Text data has some practicle and sophisticated features which are best mapped to Naive Bayes provided you are not considering Neural Nets. Besides, it's easy to interpret and does not create the notion of a blackbox model.
 #Naive Bayes suffers from a certain disadvantage as well:
 #The main limitation of Naive Bayes is the assumption of independent predictors. In real life, it is almost impossible that you get a set of predictors which are entirely independent.
+
 #Why is sentiment analysis so important?
 #Sentiment analysis solves a number of genuine business problems:
 #It helps to predict customer behavior for a particular product.
