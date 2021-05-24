@@ -7,8 +7,14 @@ Created on Wed May 19 16:23:40 2021
 
 
 
+
+
+
 import pandas as pd
-mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv'#, index_col=0
+#mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv')
+
+
+mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
                                     )
 
 # Show dataframe
@@ -47,7 +53,16 @@ from nltk.corpus import stopwords
 from nltk import word_tokenize
 #nltk.download('stopwords')
 #nltk.download('punkt')
-
+#nltk.download([
+#"names",
+#"stopwords",
+#"state_union",
+#"twitter_samples",
+#"movie_reviews",
+#"averaged_perceptron_tagger",
+#"vader_lexicon",
+#"punkt",
+#])
 
 sentiment = 'Positive'
 
@@ -256,7 +271,7 @@ mgm_macau_reviews['Dateofstay2'] =pd.to_datetime(mgm_macau_reviews['Dateofstay2'
 #https://www.shanelynn.ie/bar-plots-in-python-using-pandas-dataframes/
 mgm_macau_reviews[['sentiment','review']].groupby(by=(['sentiment'])).count().plot(kind="bar")
 
-mgm_macau_reviews[['reviewdatev','sentiment','review']].groupby(by=(['reviewdatev1','sentiment'])).count().plot(kind="bar")
+mgm_macau_reviews[['reviewdatev1','sentiment','review']].groupby(by=(['reviewdatev1','sentiment'])).count().plot(kind="bar")
 
 
 mgm_macau_reviews['count']=1
@@ -284,8 +299,8 @@ import plotly.io as pio
 
 #https://stackoverflow.com/questions/61076090/plotly-figure-window-doesnt-appear-using-spyder
 #https://plotly.com/python/renderers/
-pio.renderers.default='browser'
-#pio.renderers.default = "svg"
+#pio.renderers.default='browser'
+pio.renderers.default = "svg"
 #pio.renderers.default = "png"
 
 fig = go.Figure(data=go.Scatter(x=mgm_macau_reviews_timeseries['reviewdatev2'].astype(dtype=str), 
@@ -339,9 +354,9 @@ import re
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
-
+del STOPWORDS
 STOPWORDS = (stopwords.words('english'))
-newStopWords = ['hotel','mgm','MGM','Grand','macau','room','staff','hotels','friend','free','us','check'
+newStopWords = ['hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
                                      ,'much','visit' , 'many' , 'check','even','way','bit','arrived'
                                      ,'night','casino','service','stayed','got','around','provide','really'
                                      ,'every','even','make','check','took','provided','wynn','staying','booked'
@@ -351,6 +366,15 @@ newStopWords = ['hotel','mgm','MGM','Grand','macau','room','staff','hotels','fri
                                      ]
 STOPWORDS.extend(newStopWords)
 
+
+
+
+#geeksforgeeks.org/tf-idf-for-bigrams-trigrams/    
+#TF-IDF in NLP stands for Term Frequency – Inverse document frequency. It is a very popular topic in Natural Language Processing which generally deals with human languages. During any text processing, cleaning the text (preprocessing) is vital. Further, the cleaned data needs to be converted into a numerical format where each 
+#word is represented by a matrix (word vectors). This is also known as word embedding
+#Term Frequency (TF) = (Frequency of a term in the document)/(Total number of terms in documents)
+#Inverse Document Frequency(IDF) = log( (total number of documents)/(number of documents with term t))
+#TF.IDF = (TF).(IDF)
 
 # Preprocessing
 def remove_string_special_characters(s):
@@ -373,31 +397,34 @@ def remove_string_special_characters(s):
 for i, line in enumerate(mgm_macau_reviews.review):
     mgm_macau_reviews.review[i] = ' '.join([x for 
         x in nltk.word_tokenize(line) if
-        (x not in newStopWords)])
-    #(i, line)
+        (x.lower() not in newStopWords)])
+    #print(i, line)
 
          
-# Getting trigrams 
-vectorizer = CountVectorizer(ngram_range = (3,3))
-X1 = vectorizer.fit_transform(mgm_macau_reviews.review) 
-features = (vectorizer.get_feature_names())
-print("\n\nFeatures : \n", features)
-print("\n\nX1 : \n", X1.toarray())
+
+## Getting trigrams 
+#vectorizer = CountVectorizer(ngram_range = (3,3))
+#X1 = vectorizer.fit_transform(mgm_macau_reviews.review) 
+#features = (vectorizer.get_feature_names())
+##print("\n\nFeatures : \n", features)
+##print("\n\nX1 : \n", X1.toarray())
   
-# Applying TFIDF
-vectorizer = TfidfVectorizer(ngram_range = (3,3))
-X2 = vectorizer.fit_transform(mgm_macau_reviews.review)
-scores = (X2.toarray())
-print("\n\nScores : \n", scores)
+## Applying TFIDF
+#vectorizer = TfidfVectorizer(ngram_range = (3,3))
+#X2 = vectorizer.fit_transform(mgm_macau_reviews.review)
+#scores = (X2.toarray())
+##print("\n\nScores : \n", scores)
   
-# Getting top ranking features
-sums = X2.sum(axis = 0)
-data1 = []
-for col, term in enumerate(features):
-    data1.append( (term, sums[0,col] ))
-ranking = pd.DataFrame(data1, columns = ['term','rank'])
-words = (ranking.sort_values('rank', ascending = False))
-print ("\n\nWords head : \n", words.head(50))
+## Getting top ranking features
+#sums = X2.sum(axis = 0)
+#data1 = []
+#for col, term in enumerate(features):
+#    data1.append( (term, sums[0,col] ))
+#ranking = pd.DataFrame(data1, columns = ['term','rank'])
+#words = (ranking.sort_values('rank', ascending = False))
+#print ("\n\nWords head : \n", words.head(50))
+
+
 
 
 
@@ -406,7 +433,7 @@ vectorizer = CountVectorizer(ngram_range =(2, 2))
 X1 = vectorizer.fit_transform(mgm_macau_reviews.review) 
 features = (vectorizer.get_feature_names())
 print("\n\nX1 : \n", X1.toarray())
-  
+
 # Applying TFIDF
 # You can still get n-grams here
 vectorizer = TfidfVectorizer(ngram_range = (2, 2))
@@ -416,12 +443,13 @@ print("\n\nScores : \n", scores)
   
 # Getting top ranking features
 sums = X2.sum(axis = 0)
+print(sums)
 data1 = []
 for col, term in enumerate(features):
     data1.append( (term, sums[0, col] ))
 ranking = pd.DataFrame(data1, columns = ['term', 'rank'])
 words = (ranking.sort_values('rank', ascending = False))
-print ("\n\nWords : \n", words.head(7))
+print ("\n\nWords : \n", words.head(50))
 
 
 #https://kanoki.org/2019/11/06/python-detect-and-translate-language/
