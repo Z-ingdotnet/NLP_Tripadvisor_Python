@@ -771,14 +771,14 @@ plt.show()
 
 
 
-Now the question - why Naive Bayes?
-You chose to study Naive Bayes because of the way it is designed and developed. Text data has some practicle and sophisticated features which are best mapped to Naive Bayes provided you are not considering Neural Nets. Besides, it's easy to interpret and does not create the notion of a blackbox model.
-Naive Bayes suffers from a certain disadvantage as well:
-The main limitation of Naive Bayes is the assumption of independent predictors. In real life, it is almost impossible that you get a set of predictors which are entirely independent.
-Why is sentiment analysis so important?
-Sentiment analysis solves a number of genuine business problems:
-It helps to predict customer behavior for a particular product.
-It can help to test the adaptability of a product.
-Automates the task of customer preference reports.
-It can easily automate the process of determining how well did a movie run by analyzing the sentiments behind the movie's reviews from a number of platforms.
-And many more!
+#Now the question - why Naive Bayes?
+#You chose to study Naive Bayes because of the way it is designed and developed. Text data has some practicle and sophisticated features which are best mapped to Naive Bayes provided you are not considering Neural Nets. Besides, it's easy to interpret and does not create the notion of a blackbox model.
+#Naive Bayes suffers from a certain disadvantage as well:
+#The main limitation of Naive Bayes is the assumption of independent predictors. In real life, it is almost impossible that you get a set of predictors which are entirely independent.
+#Why is sentiment analysis so important?
+#Sentiment analysis solves a number of genuine business problems:
+#It helps to predict customer behavior for a particular product.
+#It can help to test the adaptability of a product.
+#Automates the task of customer preference reports.
+#It can easily automate the process of determining how well did a movie run by analyzing the sentiments behind the movie's reviews from a number of platforms.
+#And many more!
