@@ -11,19 +11,15 @@ Created on Wed May 19 16:23:40 2021
 
 
 import pandas as pd
-mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv')
+mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv', encoding='utf-8')
 
-mgm_cotai_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_mgm_cotai_edited.csv')
-
-
+mgm_cotai_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_mgm_cotai_edited.csv', encoding='utf-8')
 
 
-mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
-                                   )
 
-mgm_cotai_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_mgm_cotai_edited.csv'#, index_col=0
-                                   )
 
+#mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
+#                                    )
 
 # Show dataframe
 print(mgm_macau_reviews)
@@ -46,32 +42,17 @@ print(mgm_cotai_reviews['review'][0])
 #df['sentiment'] = df.apply(lambda row: row.Score1 + row.Score2, axis = 1) 
 
 
-#mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
-#lambda x:'Positive' if 2<x else \
-#('Natural' if x==3 else\
-#('Negative' if 1<=x<2 else\
-#'unknown'))
-#    #)
-
- mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
-lambda x: '1' if 2<x else \
-'-1' )
-
-
-#mgm_cotai_reviews['sentiment'] = mgm_cotai_reviews.star.map(\
-#lambda x:'Positive' if 2<x else \
-##('Natural' if x==3 else\
-#('Negative' if 1<=x<2 else\
-#'unknown'))
-#    #)
 
 mgm_macau_reviews['sentiment'] = mgm_macau_reviews.star.map(\
-lambda x: '1' if 2<x else \
-'-1' )
+lambda x: 'Positive' if 2<x else \
+'Negative' )
 
 mgm_cotai_reviews['sentiment'] = mgm_cotai_reviews.star.map(\
-lambda x: '1' if 2<x else \
-'-1' )   
+lambda x: 'Positive' if 2<x else \
+'Negative' )   
+
+    
+    
 
 import matplotlib.pyplot as plt
 %matplotlib inline
@@ -388,7 +369,7 @@ if 'STOPWORDS_sentiment' in locals():
     del STOPWORDS_sentiment
     
 STOPWORDS_sentiment = (stopwords.words('english'))
-newStopWords = ['experienced','experience','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
+newStopWords = ['cotai','including','experienced','experience','macao','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
                                      ,'much','visit' , 'many' , 'check','even','way','bit','arrived'
                                      ,'night','casino','service','stayed','got','around','provide','really'
                                      ,'every','even','make','check','took','provided','wynn','staying','booked'
@@ -528,7 +509,7 @@ import re
 
 from nltk.stem.porter import *
 #wordcoreextractor
-#stemmer = PorterStemmer()
+stemmer = PorterStemmer()
 
 
 
@@ -572,17 +553,10 @@ def review_to_words(review):
     log('\n Stop words removed')
     log(review)
     
-    # loop for stemming each word 
-    # in string array at ith row  
     # stemming
     #review = [PorterStemmer().stem(w) for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
-  
-    #review = [stemmer.stem(w) for w in review
-                ##if not w in set(stopwords.words('english'))
-                #if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])
-                #] 
-    log('\n Stemmed')
-    log(review)
+    #log('\n Stemmed')
+    #log(review)
     
     log('\n\n')
     #words=[]
@@ -592,15 +566,15 @@ def review_to_words(review):
 
 
 
+
 import pickle
 import os
 
 
-cache_dir = os.path.join("C:/Users/Zing/OneDrive/GitHub/Python/NLP//bin/","cache", "sentiment_analysis")  # where to store cache files
-os.makedirs(cache_dir, exist_ok=True)  # ensure cache directory exists
 
-#cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
-#os.makedirs(cache_dir, exist_ok=True)  # ensure cache directory exists
+
+cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
+os.makedirs(cache_dir, exist_ok=True)  # ensure cache directory exists
 
 def preprocess_data(data_train,data_test,
                     cache_dir=cache_dir, cache_file="preprocessed_mgm_reviewdata.pkl"):
@@ -639,6 +613,7 @@ def preprocess_data(data_train,data_test,
 
 # Preprocess data
 words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
+#words_train, words_test= preprocess_data(mgm_macau_reviews["review"],mgm_cotai_reviews["review"])
 
 
 os.remove (os.path.join(cache_dir,'preprocessed_mgm_reviewdata.pkl'))
@@ -684,10 +659,12 @@ https://dinghe.github.io/sentiment_analysis.html
 
 
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.externals import joblib
+import joblib
+#import sklearn.external.joblib as extjoblib
+
 # joblib is an enhanced version of pickle that is more efficient for storing NumPy arrays
 
-def extract_BoW_features(words_train, words_test, vocabulary_size=5000,
+def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
                          cache_dir=cache_dir, cache_file="bow_features.pkl"):
     """Extract Bag-of-Words for a given set of documents, already preprocessed into words."""
     
@@ -706,7 +683,8 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=5000,
         # TODO: Fit a vectorizer to training documents and use it to transform them
         # NOTE: Training documents have already been preprocessed and tokenized into words;
         #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
-        vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=False,max_features=5000)
+        #vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=5000)
+        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=8000)
         features_train = vectorizer.fit_transform(words_train).toarray()
 
         # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
@@ -733,6 +711,9 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=5000,
 
 # Extract Bag of Words features for both training and test datasets
 features_train, features_test, vocabulary = extract_BoW_features(words_train, words_test)
+
+os.remove (os.path.join(cache_dir,'bow_features.pkl'))
+
 
 # Inspect the vocabulary that was computed
 print("Vocabulary: {} words".format(len(vocabulary)))
@@ -787,6 +768,8 @@ plt.show()
 
 
 
+
+
 """
 #Normalize feature vectors
 https://dinghe.github.io/sentiment_analysis.html
@@ -820,6 +803,107 @@ print("[{}] Accuracy: train = {}, test = {}".format(
         ,clf1.score(features_test,mgm_cotai_reviews.sentiment)
         ))
 
+
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is absolutely depressing"
+true_sentiment = 'Negative'
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
+my_features = vectorizer.transform(my_words).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = clf1.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "Upon arrival we were welcomed by the staff and were upgraded to the Resort Suite. The room was just perfect for our anniversary.  The swimming pool and the spa are spotless. Wonderful interiors, helpful staffs and excellent service.  With the breakfast and the view of the hotel, it’s the best way to kick off our day."
+true_sentiment = 'Positive' 
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x))
+my_features = vectorizer.transform(my_words).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = clf1.predict(my_features)
+print(yhat)
+
+
+
+
+
+
+
+
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import GridSearchCV
+
+n_estimators = range(20, 81, 10)
+
+def classify_gboost(X_train, X_test, y_train, y_test):        
+    # Initialize classifier
+    clf = GradientBoostingClassifier(n_estimators=n_estimators, learning_rate=1.0, max_depth=1, random_state=0)
+
+    # TODO: Classify the data using GradientBoostingClassifier
+    gsearch = GridSearchCV(estimator = clf, param_grid = {'n_estimators': n_estimators}, verbose=50, n_jobs=-1)
+    gsearch.fit(X_train, y_train)
+    # TODO(optional): Perform hyperparameter tuning / model selection
+    best_clf = gsearch.best_estimator_
+    # TODO: Print final training & test accuracy
+    print(gsearch.best_params_)
+    # Return best classifier model
+    print("[{}] Accuracy: train = {}, test = {}".format(
+    best_clf.__class__.__name__,
+    best_clf.score(X_train, y_train),
+    best_clf.score(X_test, y_test)))
+    
+    return best_clf
+
+
+
+clf2 = classify_gboost(features_train, features_test, mgm_macau_reviews["sentiment"], mgm_cotai_reviews["sentiment"])
+
+
+
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is noise,hate, bad, slow, horrible,rude, pool is unavailable"
+true_sentiment = 'Negative'
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x))
+my_features = vectorizer.transform(my_words).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = clf2.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is nice and awesome"
+true_sentiment = 'Positive' 
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x))
+my_features = vectorizer.transform(my_words).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = clf2.predict(my_features)
+print(yhat)
+
+
+
+
 #You and I would have understood that sentence in a fraction of a second. But machines simply cannot process text data in raw form. They need us to break down the text into a numerical format that’s easily readable by the machine (the idea behind Natural Language Processing!).
 
 #https://www.datacamp.com/community/tutorials/simplifying-sentiment-analysis-python
@@ -827,7 +911,6 @@ print("[{}] Accuracy: train = {}, test = {}".format(
 #You chose to study Naive Bayes because of the way it is designed and developed. Text data has some practicle and sophisticated features which are best mapped to Naive Bayes provided you are not considering Neural Nets. Besides, it's easy to interpret and does not create the notion of a blackbox model.
 #Naive Bayes suffers from a certain disadvantage as well:
 #The main limitation of Naive Bayes is the assumption of independent predictors. In real life, it is almost impossible that you get a set of predictors which are entirely independent.
-
 #Why is sentiment analysis so important?
 #Sentiment analysis solves a number of genuine business problems:
 #It helps to predict customer behavior for a particular product.
