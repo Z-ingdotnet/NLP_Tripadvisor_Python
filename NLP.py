@@ -352,6 +352,14 @@ app.run_server()
 
 
 
+"""
+# Preprocessing v1
+#imbalance
+https://datauab.github.io/sentiment_predictions/
+"""
+
+
+
 
 """
 # Preprocessing v1
@@ -612,6 +620,11 @@ def preprocess_data(data_train,data_test,
 
 
 # Preprocess data
+
+
+
+
+
 words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
 #words_train, words_test= preprocess_data(mgm_macau_reviews["review"],mgm_cotai_reviews["review"])
 
@@ -658,12 +671,20 @@ https://dinghe.github.io/sentiment_analysis.html
 """
 
 
+from imblearn.combine import SMOTETomek
+smt = SMOTETomek(sampling_strategy='auto')
+#smt = SMOTETomek(random_state=42)
+
+
 from sklearn.feature_extraction.text import CountVectorizer
 import joblib
 #import sklearn.external.joblib as extjoblib
 
 # joblib is an enhanced version of pickle that is more efficient for storing NumPy arrays
 
+
+y=mgm_macau_reviews["sentiment"]
+y2=mgm_cotai_reviews["sentiment"]
 def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
                          cache_dir=cache_dir, cache_file="bow_features.pkl"):
     """Extract Bag-of-Words for a given set of documents, already preprocessed into words."""
@@ -684,35 +705,45 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
         # NOTE: Training documents have already been preprocessed and tokenized into words;
         #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
         #vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=5000)
-        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=8000)
+        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=10)
         features_train = vectorizer.fit_transform(words_train).toarray()
-
         # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
         features_test = vectorizer.fit_transform(words_test).toarray()
+         
+        features_train, y_smt = smt.fit_resample(features_train,y)
+        features_test, y2_smt = smt.fit_resample(features_test,y2)
         
         # NOTE: Remember to convert the features using .toarray() for a compact representation
         
         # Write to cache file for future runs (store vocabulary as well)
         if cache_file is not None:
             vocabulary = vectorizer.vocabulary_
-            cache_data = dict(features_train=features_train, features_test=features_test,
-                             vocabulary=vocabulary)
+            cache_data = dict(features_train=features_train, features_test=features_test ,
+                             vocabulary=vocabulary,y_smt=y_smt,y2_smt=y2_smt)
             with open(os.path.join(cache_dir, cache_file), "wb") as f:
                 joblib.dump(cache_data, f)
             print("Wrote features to cache file:", cache_file)
     else:
         # Unpack data loaded from cache file
         features_train, features_test, vocabulary = (cache_data['features_train'],
-                cache_data['features_test'], cache_data['vocabulary'])
-    
+                cache_data['features_test'], cache_data['vocabulary']) , y_smt,y2_smt
     # Return both the extracted features as well as the vocabulary
-    return features_train, features_test, vocabulary
+    return features_train, features_test, vocabulary, y_smt,y2_smt
 
 
 # Extract Bag of Words features for both training and test datasets
-features_train, features_test, vocabulary = extract_BoW_features(words_train, words_test)
+
+#y=mgm_macau_reviews["sentiment"]
+#features_train, y = smt.fit_resample(features_train,y )
+
+
+features_train, features_test, vocabulary, y_smt,y2_smt = extract_BoW_features(words_train, words_test)
+
 
 os.remove (os.path.join(cache_dir,'bow_features.pkl'))
+
+
+
 
 
 # Inspect the vocabulary that was computed
@@ -739,6 +770,12 @@ print("\n--- Bag-of-Words features ---")
 print(features_train[0])
 print("\n--- Label ---")
 print(mgm_macau_reviews["sentiment"][1])
+
+
+
+
+
+
 
 
 
@@ -803,8 +840,14 @@ print("[{}] Accuracy: train = {}, test = {}".format(
         ,clf1.score(features_test,mgm_cotai_reviews.sentiment)
         ))
 
+clf1 = GaussianNB().fit(features_train,y_smt)
 
-
+# Calculate the mean accuracy score on training and test sets
+print("[{}] Accuracy: train = {}, test = {}".format(
+        clf1.__class__.__name__,
+        clf1.score(features_train,y_smt)
+        ,clf1.score(features_test,y2_smt)
+        ))
 
 
 # TODO: Write a sample review and set its true sentiment
@@ -870,6 +913,8 @@ def classify_gboost(X_train, X_test, y_train, y_test):
 clf2 = classify_gboost(features_train, features_test, mgm_macau_reviews["sentiment"], mgm_cotai_reviews["sentiment"])
 
 
+clf2 = classify_gboost(features_train, features_test, y_smt, y2_smt)
+
 
 
 
@@ -889,7 +934,7 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "This hotel is nice and awesome"
+my_review = "We were so impressed by the service at this hotel"
 true_sentiment = 'Positive' 
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
@@ -900,6 +945,7 @@ my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf2.predict(my_features)
 print(yhat)
+
 
 
 
