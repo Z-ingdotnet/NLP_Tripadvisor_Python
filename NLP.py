@@ -8,7 +8,9 @@ Created on Wed May 19 16:23:40 2021
 
 
 
-
+"""
+# Data collection
+"""
 
 import pandas as pd
 mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv', encoding='utf-8')
@@ -16,6 +18,11 @@ mgm_macau_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_edited.csv', 
 mgm_cotai_reviews = pd.read_csv('Z:/MGM/My work/Python/TripReviews_mgm_cotai_edited.csv', encoding='utf-8')
 
 
+
+
+"""
+# Data cleansing
+"""
 
 
 #mgm_macau_reviews = pd.read_csv('C:/Users/Zing/OneDrive/GitHub/Python/NLP/TripReviews_edited.csv'#, index_col=0
@@ -53,6 +60,9 @@ lambda x: 'Positive' if 2<x else \
 
     
     
+"""
+# Data exploration
+"""
 
 import matplotlib.pyplot as plt
 %matplotlib inline
@@ -210,6 +220,7 @@ plt.imshow(mgm_macau_natreview_wc)
 
 
 
+
 import numpy as np
 
 ##################### Dates manipulation
@@ -280,15 +291,18 @@ mgm_macau_reviews['Dateofstay2'] =pd.to_datetime(mgm_macau_reviews['Dateofstay2'
 
 
 #https://www.shanelynn.ie/bar-plots-in-python-using-pandas-dataframes/
-mgm_macau_reviews[['sentiment','review']].groupby(by=(['sentiment'])).count().plot(kind="bar")
 
-mgm_macau_reviews[['reviewdatev1','sentiment','review']].groupby(by=(['reviewdatev1','sentiment'])).count().plot(kind="bar")
+
+
+
+mgm_macau_reviews[['sentiment','review']].groupby(by=(['sentiment'])).count().plot(kind="bar")
+#mgm_macau_reviews[['reviewdatev1','sentiment','review']].groupby(by=(['reviewdatev1','sentiment'])).count().plot(kind="bar")
+
+
 
 
 mgm_macau_reviews['count']=1
 mgm_macau_reviews_timeseries=mgm_macau_reviews[['reviewdatev2','review']].groupby(by=(['reviewdatev2'])).count().reset_index()
-
-
 
 top_dates = mgm_macau_reviews_timeseries.sort_values(by=['review'],ascending=False).head(3)
 vals = []
@@ -335,19 +349,77 @@ fig.show()
 
 
 
-#https://www.datarevenue.com/en-blog/data-dashboarding-streamlit-vs-dash-vs-shiny-vs-voila
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
 
 
-app = dash.Dash(__name__)
 
-app.layout = html.Div([
-    dcc.Graph(id="graph", figure=fig),
-])
+num_words = []
+for x,word in enumerate(mgm_macau_reviews['review']):
+    num_words = len(word.split())
+    num_words.append(num_words)
 
-app.run_server()
+
+
+
+num_words = len(x.split()) for x in mgm_macau_reviews['review']
+   
+for char in '-.,\n':
+    #Text=mgm_macau_reviews['review'].replace(char,' ')
+    #Text = len(re.sub(r"[^a-zA-Z]", " ", mgm_macau_reviews['review'][1]).split()) 
+    Text =len(mgm_macau_reviews['review'].split())
+Text = Text.lower()
+   
+for x,word in enumerate(mgm_macau_reviews.review):
+    num_words = len(x.split())
+
+
+ 
+
+    
+    
+def countwords (s):
+    textcount=[w for w in review]
+    textcoun=len(mgm_macau_reviews['review'].split())
+   
+    words_train = list(map(review_to_words, data_train))
+   
+   
+
+wordscnt_train=[]
+wordscnt_test=[]
+def wordcount(data_train,data_test):
+    wordscnt_train = list(map(review_to_words, data_train))
+    wordscnt_test = list(map(review_to_words, data_test))
+    return wordscnt_train, wordscnt_test
+
+wordcount(mgm_macau_reviews, mgm_cotai_reviews)
+
+wordscnt_train = list(map(review_to_words, mgm_macau_reviews))
+
+
+
+
+
+
+from collections import Counter
+wordcount = Counter(mgm_macau_reviews['review'])
+sns.distplot(wordcount, hist=True, kde=True, 
+             bins=int(180/5), color = 'darkblue', 
+             hist_kws={'edgecolor':'black'},
+             kde_kws={'linewidth': 4})
+
+
+sns.distplot(mgm_macau_reviews['sentiment'], hist=True, kde=True, 
+             bins=int(180/5), color = 'darkblue', 
+             hist_kws={'edgecolor':'black'},
+             kde_kws={'linewidth': 4})
+
+
+
+
+
+
+
+
 
 
 
@@ -671,9 +743,15 @@ https://dinghe.github.io/sentiment_analysis.html
 """
 
 
+"""
+resampling
+"""
 from imblearn.combine import SMOTETomek
 smt = SMOTETomek(sampling_strategy='auto')
 #smt = SMOTETomek(random_state=42)
+
+
+
 
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -682,6 +760,68 @@ import joblib
 
 # joblib is an enhanced version of pickle that is more efficient for storing NumPy arrays
 
+
+"""
+original without resampling
+
+def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
+                         cache_dir=cache_dir, cache_file="bow_features.pkl"):
+    """Extract Bag-of-Words for a given set of documents, already preprocessed into words."""
+    
+    # If cache_file is not None, try to read from it first
+    cache_data = None
+    if cache_file is not None:
+        try:
+            with open(os.path.join(cache_dir, cache_file), "rb") as f:
+                cache_data = joblib.load(f)
+            print("Read features from cache file:", cache_file)
+        except:
+            pass  # unable to read from cache, but that's okay
+    
+    # If cache is missing, then do the heavy lifting
+    if cache_data is None:
+        # TODO: Fit a vectorizer to training documents and use it to transform them
+        # NOTE: Training documents have already been preprocessed and tokenized into words;
+        #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
+        #vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=5000)
+        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=300)
+        features_train = vectorizer.fit_transform(words_train).toarray()
+        # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
+        features_test = vectorizer.fit_transform(words_test).toarray()
+              
+        # NOTE: Remember to convert the features using .toarray() for a compact representation
+        
+        # Write to cache file for future runs (store vocabulary as well)
+        if cache_file is not None:
+            vocabulary = vectorizer.vocabulary_
+            cache_data = dict(features_train=features_train, features_test=features_test ,
+                             vocabulary=vocabulary)
+            with open(os.path.join(cache_dir, cache_file), "wb") as f:
+                joblib.dump(cache_data, f)
+            print("Wrote features to cache file:", cache_file)
+    else:
+        # Unpack data loaded from cache file
+        features_train, features_test, vocabulary = (cache_data['features_train'],
+                cache_data['features_test'], cache_data['vocabulary'])
+    # Return both the extracted features as well as the vocabulary
+    return features_train, features_test, vocabulary
+
+
+# Extract Bag of Words features for both training and test datasets
+
+#y=mgm_macau_reviews["sentiment"]
+#features_train, y = smt.fit_resample(features_train,y )
+
+
+features_train, features_test, vocabulary = extract_BoW_features(words_train, words_test)
+
+"""
+
+
+
+"""
+with resampling
+"""
 
 y=mgm_macau_reviews["sentiment"]
 y2=mgm_cotai_reviews["sentiment"]
@@ -705,7 +845,7 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
         # NOTE: Training documents have already been preprocessed and tokenized into words;
         #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
         #vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=5000)
-        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=10)
+        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
         features_train = vectorizer.fit_transform(words_train).toarray()
         # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
         features_test = vectorizer.fit_transform(words_test).toarray()
@@ -774,11 +914,6 @@ print(mgm_macau_reviews["sentiment"][1])
 
 
 
-
-
-
-
-
 #[index for index in features_train[5] if index != 0]
 
 
@@ -806,6 +941,45 @@ plt.show()
 
 
 
+#import seaborn as sns
+#target_count = mgm_macau_reviews['sentiment'].value_counts()
+#print("Positive:",  target_count[0])
+#print("Negative:",  target_count[1])
+#def plot_distributionCount(x, data):
+#    #plt.subplots(figsize=(6, 4))
+#    sns.countplot(x=x, data=data, order=data[x].value_counts().index, palette='icefire_r')
+#    plt.xlabel('Frequency')
+#    plt.tight_layout()
+#    plt.show()  
+#plot_distributionCount('sentiment',mgm_macau_reviews)
+#plot_distributionCount('sentiment',pd.DataFrame(y_smt))
+
+
+
+
+
+
+my_dpi =100
+fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 10), dpi=my_dpi)
+print(fig)
+print(axes)
+
+# title for entire figure
+fig.suptitle('Before and After Resampling', fontsize=20)
+
+
+# edit subplots
+axes[0].set_title('Before', fontsize=14)
+axes[1].set_title('After', fontsize=14)
+
+
+sns.countplot(mgm_macau_reviews['sentiment'], ax=ax[0])
+sns.countplot(x['sentiment'], ax=ax[1])
+
+
+
+
+
 
 """
 #Normalize feature vectors
@@ -818,15 +992,26 @@ import sklearn.preprocessing as pr
 features_train=pr.normalize(features_train, norm='l2',copy=False)
 features_test=pr.normalize(features_test, norm='l2',copy=False)
 
-[index for index in features_train[5] if index != 0]
+#[index for index in features_train[5] if index != 0]
+
+
+
+
+
+
 
 
 """
+# Building Machine Learning Models
 #ML Classification using BoW features
 https://dinghe.github.io/sentiment_analysis.html
+
 """
 
 
+"""
+1.Gaussian Naïve Bayes
+"""
 
 from sklearn.naive_bayes import GaussianNB
 
@@ -840,8 +1025,11 @@ print("[{}] Accuracy: train = {}, test = {}".format(
         ,clf1.score(features_test,mgm_cotai_reviews.sentiment)
         ))
 
-clf1 = GaussianNB().fit(features_train,y_smt)
 
+"""
+with resampling
+"""
+clf1 = GaussianNB().fit(features_train,y_smt)
 # Calculate the mean accuracy score on training and test sets
 print("[{}] Accuracy: train = {}, test = {}".format(
         clf1.__class__.__name__,
@@ -882,7 +1070,9 @@ print(yhat)
 
 
 
-
+"""
+2.Gradient-Boosted Decision Tree classifier
+"""
 
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV
@@ -912,11 +1102,19 @@ def classify_gboost(X_train, X_test, y_train, y_test):
 
 clf2 = classify_gboost(features_train, features_test, mgm_macau_reviews["sentiment"], mgm_cotai_reviews["sentiment"])
 
-
+"""
+with resampling
+"""
 clf2 = classify_gboost(features_train, features_test, y_smt, y2_smt)
 
 
 
+# Calculate the mean accuracy score on training and test sets
+print("[{}] Accuracy: train = {}, test = {}".format(
+        clf2.__class__.__name__,
+        clf2.score(features_train,y_smt)
+        ,clf2.score(features_test,y2_smt)
+        ))
 
 
 # TODO: Write a sample review and set its true sentiment
@@ -934,7 +1132,7 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "We were so impressed by the service at this hotel"
+my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
 true_sentiment = 'Positive' 
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
@@ -948,6 +1146,73 @@ print(yhat)
 
 
 
+
+"""
+3.RNN
+"""
+
+
+from keras.datasets import imdb  # import the built-in imdb dataset in Keras
+
+# Set the vocabulary size
+vocabulary_size = 5000
+
+# Load in training and test data (note the difference in convention compared to scikit-learn)
+(X_train, y_train), (X_test, y_test) = imdb.load_data(num_words=vocabulary_size)
+print("Loaded dataset with {} training samples, {} test samples".format(len(X_train), len(X_test)))
+
+
+
+
+
+
+
+
+logisticRegression = LogisticRegression()
+naiveBayes = MultinomialNB()
+SVM = SVC()
+randomForest = RandomForestClassifier(n_estimators=50)
+neuralNetwork = MLPClassifier()
+
+models = [logisticRegression, naiveBayes, SVM, randomForest, neuralNetwork]
+
+
+
+
+
+
+
+
+
+
+"""
+Desemination visulastion and dashing
+"""
+
+
+#https://www.datarevenue.com/en-blog/data-dashboarding-streamlit-vs-dash-vs-shiny-vs-voila
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+
+
+app = dash.Dash(__name__)
+
+app.layout = html.Div([
+    dcc.Graph(id="graph", figure=fig),
+])
+
+app.run_server()
+
+
+
+#https://jsiwu94.github.io/Airlines-on-Twitter/
+#Customer sentiment:
+#To identify positive and negative opinions, emotions, and evaluations.
+#Identify negative topics:
+#Derive negative topics that people are likely to mention when talking with their experience with airlines.
+#Derive actionable insights:
+#Insights may later be used by airlines in planning and execution of customer service initiatives, media relationships etc.
 
 
 #You and I would have understood that sentence in a fraction of a second. But machines simply cannot process text data in raw form. They need us to break down the text into a numerical format that’s easily readable by the machine (the idea behind Natural Language Processing!).
