@@ -350,74 +350,44 @@ fig.show()
 
 
 
-
-
 num_words = []
 for x,word in enumerate(mgm_macau_reviews['review']):
-    num_words = len(word.split())
-    num_words.append(num_words)
+    num_words1 = len(word.split())
+    #print(num_words1)
+    num_words.append(num_words1)
+mgm_macau_reviews['cnt']=num_words
 
 
 
-
-num_words = len(x.split()) for x in mgm_macau_reviews['review']
-   
-for char in '-.,\n':
-    #Text=mgm_macau_reviews['review'].replace(char,' ')
-    #Text = len(re.sub(r"[^a-zA-Z]", " ", mgm_macau_reviews['review'][1]).split()) 
-    Text =len(mgm_macau_reviews['review'].split())
-Text = Text.lower()
-   
-for x,word in enumerate(mgm_macau_reviews.review):
-    num_words = len(x.split())
-
-
- 
-
-    
-    
-def countwords (s):
-    textcount=[w for w in review]
-    textcoun=len(mgm_macau_reviews['review'].split())
-   
-    words_train = list(map(review_to_words, data_train))
-   
-   
-
-wordscnt_train=[]
-wordscnt_test=[]
-def wordcount(data_train,data_test):
-    wordscnt_train = list(map(review_to_words, data_train))
-    wordscnt_test = list(map(review_to_words, data_test))
-    return wordscnt_train, wordscnt_test
-
-wordcount(mgm_macau_reviews, mgm_cotai_reviews)
-
-wordscnt_train = list(map(review_to_words, mgm_macau_reviews))
-
-
-
-
-
-
-from collections import Counter
-wordcount = Counter(mgm_macau_reviews['review'])
+#from collections import Counter
+wordcount = mgm_macau_reviews['cnt']
 sns.distplot(wordcount, hist=True, kde=True, 
              bins=int(180/5), color = 'darkblue', 
              hist_kws={'edgecolor':'black'},
              kde_kws={'linewidth': 4})
-
-
 sns.distplot(mgm_macau_reviews['sentiment'], hist=True, kde=True, 
              bins=int(180/5), color = 'darkblue', 
              hist_kws={'edgecolor':'black'},
              kde_kws={'linewidth': 4})
 
+#https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0
+sentiment = ['Positive', 'Negative']
+# Iterate through the five airlines
+for sentiment in sentiment:
+    # Subset to the airline
+    subset = mgm_macau_reviews[mgm_macau_reviews['sentiment'] == sentiment]
+    
+    # Draw the density plot
+    sns.distplot(subset['cnt'], hist = False, kde = True,
+                 #kde_kws = {'linewidth': 3},
+                 kde_kws = {'shade': True, 'linewidth': 3}, 
+                 label = sentiment)
 
-
-
-
-
+# Plot formatting
+plt.legend(prop={'size':9}, title = 'sentiment')    
+plt.title('Density Plot with Multiple Sentiment')
+plt.xlabel('Review Word Count')
+plt.ylabel('Density')
 
 
 
@@ -444,7 +414,6 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 
-
 if 'STOPWORDS_sentiment' in locals():
     del STOPWORDS_sentiment
     
@@ -459,12 +428,14 @@ newStopWords = ['cotai','including','experienced','experience','macao','covid','
 STOPWORDS_sentiment.extend(newStopWords)
 
 
+
+
 from nltk.corpus import names
 import random
 # Construct a list of classified names, using the names corpus.
 namelist = [(name) for name in names.words('male.txt')] + [(name) for name in names.words('female.txt')]
-random.seed(123456)
-random.shuffle(namelist)
+#random.seed(123456)
+#random.shuffle(namelist)
     
 
 
@@ -574,6 +545,50 @@ def get_word_features(wordlist):
 
 
 
+#https://datauab.github.io/sentiment_predictions/
+def cleantext(review):
+    review = review.lower()
+    
+    # tokenize the text and remove puncutation
+    review = re.sub(r"[^a-zA-Z]", " ", review) 
+    # remove words that contain numbers
+    #review = [word for word in review if not any(c.isdigit() for c in word)]
+    
+    #review = review.lower()
+        
+    review = nltk.word_tokenize(str(review))
+    
+    # remove stop words
+    review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
+    
+    # remove empty tokens
+    #text = [t for t in text if len(t) > 0]
+    
+    # join all
+    reviewclean = " ".join(review)
+    return(reviewclean)
+
+mgm_macau_reviews['reviewclean'] = mgm_macau_reviews['review'].apply(lambda x: cleantext(x))
+
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+SIA = SentimentIntensityAnalyzer()
+
+# Applying Model, Variable Creation
+mgm_macau_reviews['PolarityScore']=mgm_macau_reviews["reviewclean"].apply(lambda x:SIA.polarity_scores(x)['compound'])
+
+# Converting 0 to 1 Decimal Score to a Categorical Variable
+mgm_macau_reviews['sentiment_ps']=''
+mgm_macau_reviews.loc[mgm_macau_reviews['PolarityScore']>0,'sentiment_ps']='Positive'
+#mgm_macau_reviews.loc[data['PolarityScore']==0,'sentiment_ps']='Neutral'
+mgm_macau_reviews.loc[mgm_macau_reviews['PolarityScore']<0,'sentiment_ps']='Negative'
+
+
+
+
+
+
+
+
 
 
 
@@ -616,9 +631,22 @@ def review_to_words(review):
     # remove punctuation and numeric
     #review = re.sub(r"[^a-zA-Z0-9]", " ", review) 
     review = re.sub(r"[^a-zA-Z]", " ", review) 
+    #review = re.sub('[^a-zA-z\s]', '', review)
     log('\n Punctuation removed')
     log(review)
     
+    
+    review = re.sub('_', '', review)
+
+    # Change any white space to one space
+    review = re.sub('\s+', ' ', review)
+      
+    # Remove start and end white spaces
+    review = review.strip()
+    if review != '':
+            return review.lower()
+        
+        
     # lowercase    
     review = review.lower()
     
@@ -629,7 +657,18 @@ def review_to_words(review):
     
     # remove stop words
     #review = [w for w in review if w not in stopwords.words("english")]
-    review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
+    #review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
+    review = [w for w in review if (w.lower() not in ([n.lower() for n in STOPWORDS_sentiment]))]
+    review = [w for w in review if (w.lower() not in ([n.lower() for n in namelist]))]
+   
+    
+    #for i, line in review:
+    #mgm_macau_reviews.review[i] = ' '.join([x for 
+   #     x in nltk.word_tokenize(line) if
+    #    (x.lower() not in STOPWORDS_sentiment) and ( x.lower() not in namelist )])
+    #print(i, line)
+
+
     log('\n Stop words removed')
     log(review)
     
@@ -697,11 +736,13 @@ def preprocess_data(data_train,data_test,
 
 
 
-words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
-#words_train, words_test= preprocess_data(mgm_macau_reviews["review"],mgm_cotai_reviews["review"])
+#words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
+words_train, words_test= preprocess_data(mgm_macau_reviews["review"],mgm_cotai_reviews["review"])
 
 
 os.remove (os.path.join(cache_dir,'preprocessed_mgm_reviewdata.pkl'))
+
+
 
 # Take a look at a sample
 print("\n--- Raw review ---")
@@ -871,7 +912,7 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
     return features_train, features_test, vocabulary, y_smt,y2_smt
 
 
-# Extract Bag of Words features for both training and test datasets
+#Extract Bag of Words features for both training and test datasets
 
 #y=mgm_macau_reviews["sentiment"]
 #features_train, y = smt.fit_resample(features_train,y )
@@ -907,7 +948,7 @@ print(mgm_macau_reviews['review'][0])
 print("\n--- Preprocessed words ---")
 print(words_train[0])
 print("\n--- Bag-of-Words features ---")
-print(features_train[0])
+#print(features_train[0])
 print("\n--- Label ---")
 print(mgm_macau_reviews["sentiment"][1])
 
@@ -997,6 +1038,30 @@ features_test=pr.normalize(features_test, norm='l2',copy=False)
 
 
 
+
+
+
+
+
+"""
+Adding Biggram collocation 
+Bigram Collocations
+As mentioned at the end of the article on precision and recall, it’s possible that including bigrams will improve classification accuracy. The hypothesis is that people say things like “not great”, which is a negative expression that the bag of words model could interpret as positive since it sees “great” as a separate word.
+
+To find significant bigrams, we can use nltk.collocations.BigramCollocationFinder along with nltk.metrics.BigramAssocMeasures. The BigramCollocationFinder maintains 2 internal FreqDists, one for individual word frequencies, another for bigram frequencies. Once it has these frequency distributions, it can score individual bigrams using a scoring function provided by BigramAssocMeasures, such chi-square. These scoring functions measure the collocation correlation of 2 words, basically whether the bigram occurs about as frequently as each individual word.
+https://streamhacker.com/2010/05/24/text-classification-sentiment-analysis-stopwords-collocations/
+"""
+
+import itertools
+from nltk.collocations import BigramCollocationFinder
+from nltk.metrics import BigramAssocMeasures
+ 
+def bigram_word_feats(words, score_fn=BigramAssocMeasures.chi_sq, n=200):
+    bigram_finder = BigramCollocationFinder.from_words(words)
+    bigrams = bigram_finder.nbest(score_fn, n)
+    return dict([(ngram, True) for ngram in itertools.chain(words, bigrams)])
+ 
+evaluate_classifier(bigram_word_feats)
 
 
 
@@ -1147,8 +1212,113 @@ print(yhat)
 
 
 
+
+
+
+
+
+
+"""
+Combined Model
+https://datauab.github.io/sentiment_predictions/
+"""
+from prettytable import PrettyTable
+
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+naiveBayes=GaussianNB()
+naiveBayes1 = MultinomialNB()
+SVM = SVC()
+randomForest = RandomForestClassifier(n_estimators=50)
+neuralNetwork = MLPClassifier()
+
+models = [naiveBayes, SVM, randomForest, neuralNetwork]
+
+conf_matrix = []
+acc = []
+reports = []
+
+# For each model we are going to fit the model with the x_train and y_train.
+for model in models:
+    model.fit(features_train, y_smt)
+    
+    # Predict 
+    predictions = model.predict(features_test)
+    
+    # Get the accuracy of the predictions that the model has made.
+    accuracy = round(accuracy_score(y2_smt, predictions)*100)
+    
+    # Save the confusion_matrix for each model
+    model_cm = confusion_matrix(y2_smt.values, predictions)
+    
+    # Save the classification_report for each model
+    report = classification_report(y2_smt, predictions)
+    
+    conf_matrix.append(model_cm)
+    acc.append(accuracy)
+    reports.append(report)
+
+
+
+model_accuracy = PrettyTable()
+
+model_accuracy.add_column("Model", ['Naive Bayes', 'SVM', 'Random Forest', 'Neural Network'])
+model_accuracy.add_column("Accuracy", acc)
+print(model_accuracy)
+
+
+def plot_confusionMatrix(conf_matrix):
+    plt.figure(figsize=(15,12))
+    
+    plt.subplot(2,2,1)
+    plt.title("Random Forest Confusion Matrix")
+    sns.heatmap(conf_matrix[2], annot = True, cmap="OrRd", fmt='.0f', cbar=False);
+    
+    plt.subplot(2,2,2)
+    plt.title("Neural Network Confusion Matrix")
+    sns.heatmap(conf_matrix[3], annot = True, cmap="OrRd", fmt='.0f',cbar=False);
+    
+    plt.show()   
+plot_confusionMatrix(conf_matrix)
+
+
+import scikitplot as skplt
+randomForest_prob = randomForest.predict_proba(features_train)
+neuralNetwork_prob = neuralNetwork.predict_proba(features_train)
+skplt.metrics.plot_roc(y_smt, randomForest_prob) 
+plt.title("Random Forest ROC Curves", fontsize=15)
+plt.show()
+
+skplt.metrics.plot_roc(y_smt, neuralNetwork_prob)
+plt.title("Neural Network ROC Curves", fontsize=15)
+plt.show()
+
+
+from sklearn.metrics import roc_auc_score
+print("AUC score for Random Forest: ", round((roc_auc_score(y_smt, randomForest_prob, multi_class='ovr')),2))
+print("AUC score for Neural Network: ", round((roc_auc_score(y_smt, neuralNetwork_prob, multi_class='ovr')),2))
+
+
+print("Random Forest Classification Report")
+print(reports[2])
+
+print("Neural Network Classification Report")
+print(reports[3])
+
+
+
+
+
+
 """
 3.RNN
+https://dinghe.github.io/sentiment_analysis.html#Step-5:-Switching-gears---RNNs
 """
 
 
@@ -1161,21 +1331,42 @@ vocabulary_size = 5000
 (X_train, y_train), (X_test, y_test) = imdb.load_data(num_words=vocabulary_size)
 print("Loaded dataset with {} training samples, {} test samples".format(len(X_train), len(X_test)))
 
+word2id = imdb.get_word_index()
+id2word = {i: word for word, i in word2id.items()}
+print("--- Review (with words) ---")
+print([id2word.get(i, " ") for i in X_train[7]])
+print("--- Label ---")
+print(y_train[7])
 
 
 
+from keras.preprocessing import sequence
+
+# Set the maximum number of words per document (for both training and testing)
+max_words = 500
+
+# TODO: Pad sequences in X_train and X_test
+X_train = sequence.pad_sequences(X_train, maxlen=max_words)
+X_test = sequence.pad_sequences(X_test, maxlen=max_words)
 
 
+from keras.models import Sequential
+from keras.layers import Embedding, LSTM, Dense, Dropout
 
+#Muti-GPU training
+import tensorflow as tf
+#server = tf.train.server.create_local_server()
+#sess = tf.Session(server.target)
+from keras import backend as K
+#K.set_session(sess)
 
-logisticRegression = LogisticRegression()
-naiveBayes = MultinomialNB()
-SVM = SVC()
-randomForest = RandomForestClassifier(n_estimators=50)
-neuralNetwork = MLPClassifier()
-
-models = [logisticRegression, naiveBayes, SVM, randomForest, neuralNetwork]
-
+# TODO: Design your model
+model = Sequential()
+model.add(Embedding(vocabulary_size, 128, input_length=max_words))
+model.add(LSTM(128))
+model.add(Dropout(0.2))
+model.add(Dense(1, activation='sigmoid'))
+print(model.summary())
 
 
 
