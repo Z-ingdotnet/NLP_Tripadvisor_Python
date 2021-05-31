@@ -4,7 +4,18 @@ Created on Wed May 19 16:23:40 2021
 @author: 119987
 """
 
-
+"""
+Strcuture
+https://jsiwu94.github.io/Airlines-on-Twitter/
+In this project, I worked with a group of 5 for our last final project in my Master’s degree. With this, we aimed to understand customer complaints on social media, specifically Twitter, regarding the major airlines in the US. To learn more about our project and the codes we used to implement it, please check out our github repository here. This article was also featured by AnalyticsVidhya on Medium.com.
+Objective
+Customer sentiment:
+To identify positive and negative opinions, emotions, and evaluations.
+Identify negative topics:
+Derive negative topics that people are likely to mention when talking with their experience with airlines.
+Derive actionable insights:
+Insights may later be used by airlines in planning and execution of customer service initiatives, media relationships etc.
+"""
 
 
 
@@ -1500,8 +1511,21 @@ yhat = randomForest.predict(my_features)
 print(yhat)
 
 
-
-
+#https://www.tripadvisor.com/Hotel_Review-g664891-d604846-Reviews-Wynn_Macau-Macau.html#REVIEWS
+# TODO: Write a sample review and set its true sentiment
+#my_review = "Absolutely awful dreadful nasty nail service!"
+#my_review ="They hire uneducated people who clearly do not know what they are doing!"
+#my_review = "Each and every time it is horrible. N it is a disgrace! Shape up"
+#my_review ="it is a disgrace! Not the biggest problem I guess but for the $ they charge and it being wynn - "
+true_sentiment = 'Negative' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = randomForest.predict(my_features)
+print(yhat)
 
 
 
