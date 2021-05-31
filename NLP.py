@@ -350,6 +350,10 @@ fig.show()
 
 
 
+
+
+import seaborn as sns
+
 num_words = []
 for x,word in enumerate(mgm_macau_reviews['review']):
     num_words1 = len(word.split())
@@ -365,10 +369,10 @@ sns.distplot(wordcount, hist=True, kde=True,
              bins=int(180/5), color = 'darkblue', 
              hist_kws={'edgecolor':'black'},
              kde_kws={'linewidth': 4})
-sns.distplot(mgm_macau_reviews['sentiment'], hist=True, kde=True, 
-             bins=int(180/5), color = 'darkblue', 
-             hist_kws={'edgecolor':'black'},
-             kde_kws={'linewidth': 4})
+#sns.distplot(mgm_macau_reviews['sentiment'], hist=True, kde=True, 
+#             bins=int(180/5), color = 'darkblue', 
+#             hist_kws={'edgecolor':'black'},
+#             kde_kws={'linewidth': 4})
 
 #https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0
 sentiment = ['Positive', 'Negative']
@@ -1003,19 +1007,19 @@ plt.show()
 my_dpi =100
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 10), dpi=my_dpi)
 print(fig)
-print(axes)
+print(ax)
 
 # title for entire figure
 fig.suptitle('Before and After Resampling', fontsize=20)
 
 
 # edit subplots
-axes[0].set_title('Before', fontsize=14)
-axes[1].set_title('After', fontsize=14)
+ax[0].set_title('Before', fontsize=14)
+ax[1].set_title('After', fontsize=14)
 
 
 sns.countplot(mgm_macau_reviews['sentiment'], ax=ax[0])
-sns.countplot(x['sentiment'], ax=ax[1])
+sns.countplot(pd.DataFrame(y_smt)['sentiment'], ax=ax[1])
 
 
 
@@ -1310,6 +1314,199 @@ print(reports[2])
 
 print("Neural Network Classification Report")
 print(reports[3])
+
+
+
+
+
+
+
+"""
+Validation
+"""
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is noisy,hate, bad, slow, horrible,rude, pool is unavailable"
+
+true_sentiment = 'Negative'
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat =naiveBayes.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = naiveBayes.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = naiveBayes.predict(my_features)
+print(yhat)
+
+
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is noisy,hate, bad, slow, horrible,rude, pool is unavailable"
+
+true_sentiment = 'Negative'
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat =SVM.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = SVM.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = SVM.predict(my_features)
+print(yhat)
+
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is noisy,hate, bad, slow, horrible,rude, pool is unavailable"
+
+true_sentiment = 'Negative'
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat =neuralNetwork.predict(my_features)
+print(yhat)
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = neuralNetwork.predict(my_features)
+print(yhat)
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = neuralNetwork.predict(my_features)
+print(yhat)
+
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "This hotel is noisy, hate, bad, slow, horrible,rude, pool is unavailable"
+
+true_sentiment = 'Negative'
+
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat =randomForest.predict(my_features)
+print(yhat)
+
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = randomForest.predict(my_features)
+print(yhat)
+
+
+
+# TODO: Write a sample review and set its true sentiment
+my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
+true_sentiment = 'Positive' 
+# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+my_words = review_to_words(my_review)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.transform([my_words]).toarray()
+my_features = pr.normalize(my_features)
+# TODO: Then call your classifier to label it
+yhat = randomForest.predict(my_features)
+print(yhat)
+
+
+
+
+
+
+
+
+
 
 
 
