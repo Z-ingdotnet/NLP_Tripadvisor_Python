@@ -15,6 +15,25 @@ Identify negative topics:
 Derive negative topics that people are likely to mention when talking with their experience with airlines.
 Derive actionable insights:
 Insights may later be used by airlines in planning and execution of customer service initiatives, media relationships etc.
+
+Strcuture
+https://towardsdatascience.com/sentiment-analysis-with-python-part-1-5ce197074184
+
+In the next parts of this series we’ll look at more sophisticated ways to get better performance out of our classifier.
+Text Processing: Stemming/Lemmatizing to convert different forms of each word into one.
+n-grams: Instead of just single-word tokens (1-gram/unigram) we can also include word pairs.
+Representations: Instead of simple, binary vectors we can use word counts or TF-IDF to transform those counts.
+Algorithms: In addition to Logistic Regression, we’ll see how Support Vector Machines perform.
+
+
+
+Intro how does sentiment works (with img)
+https://monkeylearn.com/blog/text-mining-sentiment-analysis/
+
+
+Ref from Will
+https://www.cnblogs.com/chen8023miss/p/11458571.html
+https://blog.csdn.net/weixin_43579079/article/details/99324579
 """
 
 
@@ -70,7 +89,84 @@ lambda x: 'Positive' if 2<x else \
 'Negative' )   
 
     
+   
+
+
+
     
+import numpy as np
+
+##################### Dates manipulation
+#https://www.geeksforgeeks.org/python-conditional-string-append/
+
+
+#mgm_macau_reviews[mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-']
+#mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-'
+#mgm_macau_reviews.loc[(mgm_macau_reviews["reviewdate"].str.slice(1,2))=='-']
+                 
+mgm_macau_reviews['flag']=mgm_macau_reviews['reviewdate'].str.slice(1,2)     
+#mgm_macau_reviews['reviewdate'].str.slice(1,2).isin(['-'])
+#mgm_macau_reviews['reviewdate'].str.slice(1,2)
+#mgm_macau_reviews['reviewdate'].str.slice(1,2).str.contains('-')
+
+
+
+
+#https://datascience.stackexchange.com/questions/77816/valueerror-the-truth-value-of-a-series-is-ambiguous-after-applying-if-else-co
+#df['col'] = 'str' + df['col'].astype(str)
+
+#def append_str(item, add_str):
+#     if  item.str.slice(1,2)=='-' :
+   # if  lambda row: row.apply(item).astype(str).str.slice(1,2)=='-' :
+    #if  np.where(item.str.slice(1,2).str.contains('-')):
+        
+    #if np.where(mgm_macau_reviews['reviewdate'].str.slice(1,2).astype(str)=='-'):
+    #if np.where(mgm_macau_reviews['flag']=='-')
+        #return add_str+item
+         #return add_str.join(item)
+#add_str='0'  
+
+#mgm_macau_reviews['reviewdatev1']=lambda row: row.apply(append_str(mgm_macau_reviews['reviewdate'],add_str))
+#append_str(mgm_macau_reviews['reviewdate'],add_str)
+#mgm_macau_reviews['reviewdatev1'] =  map( append_str(mgm_macau_reviews['reviewdate'],add_str),mgm_macau_reviews)
+#mgm_macau_reviews['reviewdatev1'] = append_str(mgm_macau_reviews['reviewdate'], add_str)
+
+
+
+#mgm_macau_reviews['reviewdatev1']=mgm_macau_reviews['reviewdate']
+#https://stackoverflow.com/questions/43830102/conditionally-append-string-to-rows-in-a-pandas-dataframe-based-on-presence-of-v
+
+mgm_macau_reviews['reviewdatev1'] =mgm_macau_reviews.apply(lambda x: '0'+x.reviewdate if x.flag=='-' else x.reviewdate, axis=1)
+
+       
+
+
+
+
+import datetime
+
+#.mgm_macau_reviews.year
+
+mgm_macau_reviews['Dateofstay2'] = mgm_macau_reviews['Dateofstay'].str.lstrip()
+
+mgm_macau_reviews['reviewdatev2']=pd.to_datetime(mgm_macau_reviews['reviewdatev1'],format='%y-%b') 
+
+mgm_macau_reviews['Dateofstay2'] =pd.to_datetime(mgm_macau_reviews['Dateofstay2'],format='%B %Y') 
+
+
+
+#datetime.datetime.strptime()
+
+#df = ['19-Jan-19', '4-Jan-19']
+#df['date_given'].dt.year
+
+
+
+
+
+
+
+ 
 """
 # Data exploration
 """
@@ -94,6 +190,7 @@ from nltk import word_tokenize
 #"averaged_perceptron_tagger",
 #"vader_lexicon",
 #"punkt",
+#wordnet
 #])
 
 sentiment = 'Positive'
@@ -230,77 +327,6 @@ plt.imshow(mgm_macau_natreview_wc)
 
 
 
-
-
-import numpy as np
-
-##################### Dates manipulation
-#https://www.geeksforgeeks.org/python-conditional-string-append/
-
-
-#mgm_macau_reviews[mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-']
-#mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-'
-#mgm_macau_reviews.loc[(mgm_macau_reviews["reviewdate"].str.slice(1,2))=='-']
-                 
-mgm_macau_reviews['flag']=mgm_macau_reviews['reviewdate'].str.slice(1,2)     
-#mgm_macau_reviews['reviewdate'].str.slice(1,2).isin(['-'])
-#mgm_macau_reviews['reviewdate'].str.slice(1,2)
-#mgm_macau_reviews['reviewdate'].str.slice(1,2).str.contains('-')
-
-
-
-
-#https://datascience.stackexchange.com/questions/77816/valueerror-the-truth-value-of-a-series-is-ambiguous-after-applying-if-else-co
-#df['col'] = 'str' + df['col'].astype(str)
-
-#def append_str(item, add_str):
-#     if  item.str.slice(1,2)=='-' :
-   # if  lambda row: row.apply(item).astype(str).str.slice(1,2)=='-' :
-    #if  np.where(item.str.slice(1,2).str.contains('-')):
-        
-    #if np.where(mgm_macau_reviews['reviewdate'].str.slice(1,2).astype(str)=='-'):
-    #if np.where(mgm_macau_reviews['flag']=='-')
-        #return add_str+item
-         #return add_str.join(item)
-#add_str='0'  
-
-#mgm_macau_reviews['reviewdatev1']=lambda row: row.apply(append_str(mgm_macau_reviews['reviewdate'],add_str))
-#append_str(mgm_macau_reviews['reviewdate'],add_str)
-#mgm_macau_reviews['reviewdatev1'] =  map( append_str(mgm_macau_reviews['reviewdate'],add_str),mgm_macau_reviews)
-#mgm_macau_reviews['reviewdatev1'] = append_str(mgm_macau_reviews['reviewdate'], add_str)
-
-
-
-#mgm_macau_reviews['reviewdatev1']=mgm_macau_reviews['reviewdate']
-#https://stackoverflow.com/questions/43830102/conditionally-append-string-to-rows-in-a-pandas-dataframe-based-on-presence-of-v
-
-mgm_macau_reviews['reviewdatev1'] =mgm_macau_reviews.apply(lambda x: '0'+x.reviewdate if x.flag=='-' else x.reviewdate, axis=1)
-
-       
-
-
-
-
-import datetime
-
-#.mgm_macau_reviews.year
-
-mgm_macau_reviews['Dateofstay2'] = mgm_macau_reviews['Dateofstay'].str.lstrip()
-
-mgm_macau_reviews['reviewdatev2']=pd.to_datetime(mgm_macau_reviews['reviewdatev1'],format='%y-%b') 
-
-mgm_macau_reviews['Dateofstay2'] =pd.to_datetime(mgm_macau_reviews['Dateofstay2'],format='%B %Y') 
-
-
-
-#datetime.datetime.strptime()
-
-#df = ['19-Jan-19', '4-Jan-19']
-#df['date_given'].dt.year
-
-
-
-
 #https://www.shanelynn.ie/bar-plots-in-python-using-pandas-dataframes/
 
 
@@ -409,12 +435,6 @@ plt.ylabel('Density')
 
 
 
-"""
-# Preprocessing v1
-#imbalance
-https://datauab.github.io/sentiment_predictions/
-"""
-
 
 
 
@@ -433,7 +453,7 @@ if 'STOPWORDS_sentiment' in locals():
     del STOPWORDS_sentiment
     
 STOPWORDS_sentiment = (stopwords.words('english'))
-newStopWords = ['cotai','including','experienced','experience','macao','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
+newStopWords = ['cotai','including','experienced','experience','macau','macao','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
                                      ,'much','visit' , 'many' , 'check','even','way','bit','arrived'
                                      ,'night','casino','service','stayed','got','around','provide','really'
                                      ,'every','even','make','check','took','provided','wynn','staying','booked'
@@ -627,7 +647,7 @@ stemmer = PorterStemmer()
 debug=0
 def log(text):
     if debug>0:
-        print(text)
+       print(text)
 
 def review_to_words(review):
     """Convert a raw review string into a sequence of words."""
@@ -640,8 +660,8 @@ def review_to_words(review):
     
     # remove HTML tags
     review=BeautifulSoup(review, "html5lib").get_text()
-    #log('\nHTML tags removed')
-    #log(review)
+    log('\nHTML tags removed')
+    log(review)
     
     # remove punctuation and numeric
     #review = re.sub(r"[^a-zA-Z0-9]", " ", review) 
@@ -658,24 +678,26 @@ def review_to_words(review):
       
     # Remove start and end white spaces
     review = review.strip()
-    if review != '':
-            return review.lower()
+    #if review != '':
+   #         return review.lower()
         
-        
+       
     # lowercase    
     review = review.lower()
     
     # tokenize
     review = nltk.word_tokenize(review)
-    log('\n Tokenized')
+    
+    ('\n Tokenized')
     log(review)
     
-    # remove stop words
+    # remove stop words and names
     #review = [w for w in review if w not in stopwords.words("english")]
-    #review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
-    review = [w for w in review if (w.lower() not in ([n.lower() for n in STOPWORDS_sentiment]))]
-    review = [w for w in review if (w.lower() not in ([n.lower() for n in namelist]))]
-   
+    review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
+    #review = [w for w in review if (w not in ([n for n in STOPWORDS_sentiment]))]
+    #review = [w for w in review if (w not in ([n for n in namelist]))]
+    #review = [w for w in review if w not in STOPWORDS_sentiment]
+    
     
     #for i, line in review:
     #mgm_macau_reviews.review[i] = ' '.join([x for 
@@ -692,7 +714,7 @@ def review_to_words(review):
     #log('\n Stemmed')
     #log(review)
     
-    log('\n\n')
+    #log('\n\n')
     #words=[]
     
     # Return final list of words
@@ -701,10 +723,9 @@ def review_to_words(review):
 
 
 
+
 import pickle
 import os
-
-
 
 
 cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
@@ -790,16 +811,40 @@ print(mgm_cotai_reviews["sentiment"][1])
 
 
 
+
+
+
+
+
 """
 # Post-processing
 # Feature Extraction
+different methods comparison
+https://aiaspirant.com/bag-of-words/
+
+
 #Extracting Bag-of-Words 
 #Compute Bag-of-Words features¶
+
+ppt explaination see below
+https://www.geeksforgeeks.org/feature-extraction-techniques-nlp/
+
+
 https://dinghe.github.io/sentiment_analysis.html
 """
 
 
+
+
+
+
+
+
 """
+#
+#imbalance
+https://datauab.github.io/sentiment_predictions/
+
 resampling
 """
 from imblearn.combine import SMOTETomek
@@ -810,7 +855,8 @@ smt = SMOTETomek(sampling_strategy='auto')
 
 
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
 import joblib
 #import sklearn.external.joblib as extjoblib
 
@@ -933,11 +979,19 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
 #features_train, y = smt.fit_resample(features_train,y )
 
 
+from time import time
+t = time()
+
+
 features_train, features_test, vocabulary, y_smt,y2_smt = extract_BoW_features(words_train, words_test)
 
 
 os.remove (os.path.join(cache_dir,'bow_features.pkl'))
 
+duration = time() - t
+
+print("Time taken to extract features from training data : %f seconds" % (duration))
+print("n_samples: %d, n_features: %d" % features_train.shape)
 
 
 
@@ -1056,27 +1110,6 @@ features_test=pr.normalize(features_test, norm='l2',copy=False)
 
 
 
-
-
-"""
-Adding Biggram collocation 
-Bigram Collocations
-As mentioned at the end of the article on precision and recall, it’s possible that including bigrams will improve classification accuracy. The hypothesis is that people say things like “not great”, which is a negative expression that the bag of words model could interpret as positive since it sees “great” as a separate word.
-
-To find significant bigrams, we can use nltk.collocations.BigramCollocationFinder along with nltk.metrics.BigramAssocMeasures. The BigramCollocationFinder maintains 2 internal FreqDists, one for individual word frequencies, another for bigram frequencies. Once it has these frequency distributions, it can score individual bigrams using a scoring function provided by BigramAssocMeasures, such chi-square. These scoring functions measure the collocation correlation of 2 words, basically whether the bigram occurs about as frequently as each individual word.
-https://streamhacker.com/2010/05/24/text-classification-sentiment-analysis-stopwords-collocations/
-"""
-
-import itertools
-from nltk.collocations import BigramCollocationFinder
-from nltk.metrics import BigramAssocMeasures
- 
-def bigram_word_feats(words, score_fn=BigramAssocMeasures.chi_sq, n=200):
-    bigram_finder = BigramCollocationFinder.from_words(words)
-    bigrams = bigram_finder.nbest(score_fn, n)
-    return dict([(ngram, True) for ngram in itertools.chain(words, bigrams)])
- 
-evaluate_classifier(bigram_word_feats)
 
 
 
