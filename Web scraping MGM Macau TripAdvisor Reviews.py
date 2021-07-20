@@ -379,6 +379,18 @@ scrapeUrls(url)
 
 
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+#requests.packages.urllib3.contrib.pyopenssl.extract_from_urllib3()
+
+#import ssl
+#ssl._create_default_https_context = ssl._create_unverified_context
+
+
+headers = {
+    'User-Agent':
+        'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36'
+}    
 
 
            
