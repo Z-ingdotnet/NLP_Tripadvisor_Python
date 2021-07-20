@@ -148,7 +148,7 @@ def scrapeUrls(url):
     url =[startingUrl]
     for url in url:
         page = requests.get(url)
-        #page = requests.get(url, verify = False)
+        #page = requests.get(url,headers = headers,verify = False)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         results = soup('div', class_='was-ssr-only')
         try:
@@ -259,7 +259,7 @@ def scrapeUrls(url):
         while nextPage:
             time.sleep(10)
             page = requests.get(url)
-            #page = requests.get(url, verify = False)
+            #page = requests.get(url,headers = headers,verify = False)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             results = soup('div', class_='was-ssr-only')
             try:
@@ -328,7 +328,7 @@ def scrapeUrls(url):
                 #except:
                     #pass
             page = requests.get(url)
-            #page = requests.get(url, verify = False)
+            #page = requests.get(url,headers = headers,verify = False)
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             #results = soup('div', class_='was-ssr-only')
             try:
@@ -398,7 +398,7 @@ def scrapeUrls(url):
             #except:
                 #pass
         page = requests.get(url)
-        #page = requests.get(url, verify = False)
+        #page = requests.get(url,headers = headers,verify = False)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         #results = soup('div', class_='was-ssr-only')
         try:
@@ -471,7 +471,7 @@ def scrapeUrls(url):
             #except:
                 #pass
         page = requests.get(url)
-        #page = requests.get(url, verify = False)
+        #page = requests.get(url,headers = headers,verify = False)
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         #results = soup('div', class_='was-ssr-only')
         try:
