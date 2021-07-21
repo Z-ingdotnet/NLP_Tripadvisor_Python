@@ -362,6 +362,7 @@ import plotly.io as pio
 #https://stackoverflow.com/questions/61076090/plotly-figure-window-doesnt-appear-using-spyder
 #https://plotly.com/python/renderers/
 #pio.renderers.default='browser'
+pio.orca.config.executable = 'C:/ProgramData/Anaconda3/pkgs/plotly-orca-1.2.1-1/orca_app/orca.exe'
 pio.renderers.default = "svg"
 #pio.renderers.default = "png"
 
