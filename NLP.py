@@ -38,6 +38,7 @@ https://blog.csdn.net/weixin_43579079/article/details/99324579
 
 
 
+
 """
 # Data collection
 """
@@ -89,84 +90,7 @@ lambda x: 'Positive' if 2<x else \
 'Negative' )   
 
     
-   
-
-
-
     
-import numpy as np
-
-##################### Dates manipulation
-#https://www.geeksforgeeks.org/python-conditional-string-append/
-
-
-#mgm_macau_reviews[mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-']
-#mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-'
-#mgm_macau_reviews.loc[(mgm_macau_reviews["reviewdate"].str.slice(1,2))=='-']
-                 
-mgm_macau_reviews['flag']=mgm_macau_reviews['reviewdate'].str.slice(1,2)     
-#mgm_macau_reviews['reviewdate'].str.slice(1,2).isin(['-'])
-#mgm_macau_reviews['reviewdate'].str.slice(1,2)
-#mgm_macau_reviews['reviewdate'].str.slice(1,2).str.contains('-')
-
-
-
-
-#https://datascience.stackexchange.com/questions/77816/valueerror-the-truth-value-of-a-series-is-ambiguous-after-applying-if-else-co
-#df['col'] = 'str' + df['col'].astype(str)
-
-#def append_str(item, add_str):
-#     if  item.str.slice(1,2)=='-' :
-   # if  lambda row: row.apply(item).astype(str).str.slice(1,2)=='-' :
-    #if  np.where(item.str.slice(1,2).str.contains('-')):
-        
-    #if np.where(mgm_macau_reviews['reviewdate'].str.slice(1,2).astype(str)=='-'):
-    #if np.where(mgm_macau_reviews['flag']=='-')
-        #return add_str+item
-         #return add_str.join(item)
-#add_str='0'  
-
-#mgm_macau_reviews['reviewdatev1']=lambda row: row.apply(append_str(mgm_macau_reviews['reviewdate'],add_str))
-#append_str(mgm_macau_reviews['reviewdate'],add_str)
-#mgm_macau_reviews['reviewdatev1'] =  map( append_str(mgm_macau_reviews['reviewdate'],add_str),mgm_macau_reviews)
-#mgm_macau_reviews['reviewdatev1'] = append_str(mgm_macau_reviews['reviewdate'], add_str)
-
-
-
-#mgm_macau_reviews['reviewdatev1']=mgm_macau_reviews['reviewdate']
-#https://stackoverflow.com/questions/43830102/conditionally-append-string-to-rows-in-a-pandas-dataframe-based-on-presence-of-v
-
-mgm_macau_reviews['reviewdatev1'] =mgm_macau_reviews.apply(lambda x: '0'+x.reviewdate if x.flag=='-' else x.reviewdate, axis=1)
-
-       
-
-
-
-
-import datetime
-
-#.mgm_macau_reviews.year
-
-mgm_macau_reviews['Dateofstay2'] = mgm_macau_reviews['Dateofstay'].str.lstrip()
-
-mgm_macau_reviews['reviewdatev2']=pd.to_datetime(mgm_macau_reviews['reviewdatev1'],format='%y-%b') 
-
-mgm_macau_reviews['Dateofstay2'] =pd.to_datetime(mgm_macau_reviews['Dateofstay2'],format='%B %Y') 
-
-
-
-#datetime.datetime.strptime()
-
-#df = ['19-Jan-19', '4-Jan-19']
-#df['date_given'].dt.year
-
-
-
-
-
-
-
- 
 """
 # Data exploration
 """
@@ -178,9 +102,9 @@ from stop_words import safe_get_stop_words
 import nltk
 from nltk.corpus import stopwords
 from nltk import word_tokenize
-#nltk.download('stopwords')
-#nltk.download('punkt')
-#nltk.download('names')
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('names')
 #nltk.download([
 #"names",
 #"stopwords",
@@ -190,7 +114,6 @@ from nltk import word_tokenize
 #"averaged_perceptron_tagger",
 #"vader_lexicon",
 #"punkt",
-#wordnet
 #])
 
 sentiment = 'Positive'
@@ -251,9 +174,9 @@ combined_text2 = " ".join([review for review in mgm_macau_reviews['review'][mgm_
 
 #stopwords = nltk.corpus.stopwords.words('english')
 STOPWORDSS = stopwords.words('english')
-newStopWords2 = ['good','like','nice','could','really','would','checked','hotel','mgm','macau','macau','room','staff','hotels','friend','free','us','check'
+newStopWords2 = ['good','like','nice'',fact','could','really','would','checked','hotel','mgm','macau','macau','room','staff','hotels','friend','free','us','check'
                                      ,'still','aksed','ok','much','visit' ,'stay','said','ready','grand', 'many' , 'check','even','way','bit','arrived'
-                                     ,'night','casino','service','stayed','got','around','provide','really'
+                                     ,'night','casino','service','stayed','got','around','provide','really','helpful','German'
                                      ,'every','even','make','check','took','provided','wynn','staying','booked'
                                      ,'Venetian','trip','made','will', 'went','always','say','came','need'
                                      ,'year','think','asked','excellent','told','today','quite','day','time','u','one','first','great','go','friendly','well','gave','get'
@@ -327,6 +250,77 @@ plt.imshow(mgm_macau_natreview_wc)
 
 
 
+
+
+import numpy as np
+
+##################### Dates manipulation
+#https://www.geeksforgeeks.org/python-conditional-string-append/
+
+
+#mgm_macau_reviews[mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-']
+#mgm_macau_reviews['reviewdate'].str.slice(1,2)=='-'
+#mgm_macau_reviews.loc[(mgm_macau_reviews["reviewdate"].str.slice(1,2))=='-']
+                 
+mgm_macau_reviews['flag']=mgm_macau_reviews['reviewdate'].str.slice(1,2)     
+#mgm_macau_reviews['reviewdate'].str.slice(1,2).isin(['-'])
+#mgm_macau_reviews['reviewdate'].str.slice(1,2)
+#mgm_macau_reviews['reviewdate'].str.slice(1,2).str.contains('-')
+
+
+
+
+#https://datascience.stackexchange.com/questions/77816/valueerror-the-truth-value-of-a-series-is-ambiguous-after-applying-if-else-co
+#df['col'] = 'str' + df['col'].astype(str)
+
+#def append_str(item, add_str):
+#     if  item.str.slice(1,2)=='-' :
+   # if  lambda row: row.apply(item).astype(str).str.slice(1,2)=='-' :
+    #if  np.where(item.str.slice(1,2).str.contains('-')):
+        
+    #if np.where(mgm_macau_reviews['reviewdate'].str.slice(1,2).astype(str)=='-'):
+    #if np.where(mgm_macau_reviews['flag']=='-')
+        #return add_str+item
+         #return add_str.join(item)
+#add_str='0'  
+
+#mgm_macau_reviews['reviewdatev1']=lambda row: row.apply(append_str(mgm_macau_reviews['reviewdate'],add_str))
+#append_str(mgm_macau_reviews['reviewdate'],add_str)
+#mgm_macau_reviews['reviewdatev1'] =  map( append_str(mgm_macau_reviews['reviewdate'],add_str),mgm_macau_reviews)
+#mgm_macau_reviews['reviewdatev1'] = append_str(mgm_macau_reviews['reviewdate'], add_str)
+
+
+
+#mgm_macau_reviews['reviewdatev1']=mgm_macau_reviews['reviewdate']
+#https://stackoverflow.com/questions/43830102/conditionally-append-string-to-rows-in-a-pandas-dataframe-based-on-presence-of-v
+
+mgm_macau_reviews['reviewdatev1'] =mgm_macau_reviews.apply(lambda x: '0'+x.reviewdate if x.flag=='-' else x.reviewdate, axis=1)
+
+       
+
+
+
+
+import datetime
+
+#.mgm_macau_reviews.year
+
+mgm_macau_reviews['Dateofstay2'] = mgm_macau_reviews['Dateofstay'].str.lstrip()
+
+mgm_macau_reviews['reviewdatev2']=pd.to_datetime(mgm_macau_reviews['reviewdatev1'],format='%y-%b') 
+
+mgm_macau_reviews['Dateofstay2'] =pd.to_datetime(mgm_macau_reviews['Dateofstay2'],format='%B %Y') 
+
+
+
+#datetime.datetime.strptime()
+
+#df = ['19-Jan-19', '4-Jan-19']
+#df['date_given'].dt.year
+
+
+
+
 #https://www.shanelynn.ie/bar-plots-in-python-using-pandas-dataframes/
 
 
@@ -341,7 +335,7 @@ mgm_macau_reviews[['sentiment','review']].groupby(by=(['sentiment'])).count().pl
 mgm_macau_reviews['count']=1
 mgm_macau_reviews_timeseries=mgm_macau_reviews[['reviewdatev2','review']].groupby(by=(['reviewdatev2'])).count().reset_index()
 
-top_dates = mgm_macau_reviews_timeseries.sort_values(by=['review'],ascending=False).head(3)
+top_dates = mgm_macau_reviews_timeseries.sort_values(by=['review'],ascending=False).head(5)
 vals = []
 for tgl, tot in zip(top_dates["reviewdatev2"], top_dates["review"]):
     tgl = tgl.strftime("%b %y")
@@ -361,8 +355,9 @@ import plotly.io as pio
 
 #https://stackoverflow.com/questions/61076090/plotly-figure-window-doesnt-appear-using-spyder
 #https://plotly.com/python/renderers/
-#pio.renderers.default='browser'
+#conda install -c plotly plotly-orca==1.2.1
 pio.orca.config.executable = 'C:/ProgramData/Anaconda3/pkgs/plotly-orca-1.2.1-1/orca_app/orca.exe'
+#pio.renderers.default='browser'
 pio.renderers.default = "svg"
 #pio.renderers.default = "png"
 
@@ -388,10 +383,6 @@ fig.show()
 
 
 
-
-
-import seaborn as sns
-
 num_words = []
 for x,word in enumerate(mgm_macau_reviews['review']):
     num_words1 = len(word.split())
@@ -407,10 +398,10 @@ sns.distplot(wordcount, hist=True, kde=True,
              bins=int(180/5), color = 'darkblue', 
              hist_kws={'edgecolor':'black'},
              kde_kws={'linewidth': 4})
-#sns.distplot(mgm_macau_reviews['sentiment'], hist=True, kde=True, 
-#             bins=int(180/5), color = 'darkblue', 
-#             hist_kws={'edgecolor':'black'},
-#             kde_kws={'linewidth': 4})
+sns.distplot(mgm_macau_reviews['sentiment'], hist=True, kde=True, 
+             bins=int(180/5), color = 'darkblue', 
+             hist_kws={'edgecolor':'black'},
+             kde_kws={'linewidth': 4})
 
 #https://towardsdatascience.com/histograms-and-density-plots-in-python-f6bda88f5ac0
 sentiment = ['Positive', 'Negative']
@@ -436,6 +427,12 @@ plt.ylabel('Density')
 
 
 
+"""
+# Preprocessing v1
+#imbalance
+https://datauab.github.io/sentiment_predictions/
+"""
+
 
 
 
@@ -450,11 +447,12 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 
 
+
 if 'STOPWORDS_sentiment' in locals():
     del STOPWORDS_sentiment
     
 STOPWORDS_sentiment = (stopwords.words('english'))
-newStopWords = ['cotai','including','experienced','experience','macau','macao','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
+newStopWords = ['cotai','including','experienced','experience','macao','covid','pandemic','hotel','mgm','las','vegas','hong kong','hong','kong','MGM','Grand','Macau','macau','room','staff','hotels','friend','free','us','check'
                                      ,'much','visit' , 'many' , 'check','even','way','bit','arrived'
                                      ,'night','casino','service','stayed','got','around','provide','really'
                                      ,'every','even','make','check','took','provided','wynn','staying','booked'
@@ -464,14 +462,12 @@ newStopWords = ['cotai','including','experienced','experience','macau','macao','
 STOPWORDS_sentiment.extend(newStopWords)
 
 
-
-
 from nltk.corpus import names
 import random
 # Construct a list of classified names, using the names corpus.
 namelist = [(name) for name in names.words('male.txt')] + [(name) for name in names.words('female.txt')]
-#random.seed(123456)
-#random.shuffle(namelist)
+random.seed(123456)
+random.shuffle(namelist)
     
 
 
@@ -581,50 +577,6 @@ def get_word_features(wordlist):
 
 
 
-#https://datauab.github.io/sentiment_predictions/
-def cleantext(review):
-    review = review.lower()
-    
-    # tokenize the text and remove puncutation
-    review = re.sub(r"[^a-zA-Z]", " ", review) 
-    # remove words that contain numbers
-    #review = [word for word in review if not any(c.isdigit() for c in word)]
-    
-    #review = review.lower()
-        
-    review = nltk.word_tokenize(str(review))
-    
-    # remove stop words
-    review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
-    
-    # remove empty tokens
-    #text = [t for t in text if len(t) > 0]
-    
-    # join all
-    reviewclean = " ".join(review)
-    return(reviewclean)
-
-mgm_macau_reviews['reviewclean'] = mgm_macau_reviews['review'].apply(lambda x: cleantext(x))
-
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-SIA = SentimentIntensityAnalyzer()
-
-# Applying Model, Variable Creation
-mgm_macau_reviews['PolarityScore']=mgm_macau_reviews["reviewclean"].apply(lambda x:SIA.polarity_scores(x)['compound'])
-
-# Converting 0 to 1 Decimal Score to a Categorical Variable
-mgm_macau_reviews['sentiment_ps']=''
-mgm_macau_reviews.loc[mgm_macau_reviews['PolarityScore']>0,'sentiment_ps']='Positive'
-#mgm_macau_reviews.loc[data['PolarityScore']==0,'sentiment_ps']='Neutral'
-mgm_macau_reviews.loc[mgm_macau_reviews['PolarityScore']<0,'sentiment_ps']='Negative'
-
-
-
-
-
-
-
-
 
 
 
@@ -648,7 +600,7 @@ stemmer = PorterStemmer()
 debug=0
 def log(text):
     if debug>0:
-       print(text)
+        print(text)
 
 def review_to_words(review):
     """Convert a raw review string into a sequence of words."""
@@ -661,52 +613,26 @@ def review_to_words(review):
     
     # remove HTML tags
     review=BeautifulSoup(review, "html5lib").get_text()
-    log('\nHTML tags removed')
-    log(review)
+    #log('\nHTML tags removed')
+    #log(review)
     
     # remove punctuation and numeric
     #review = re.sub(r"[^a-zA-Z0-9]", " ", review) 
     review = re.sub(r"[^a-zA-Z]", " ", review) 
-    #review = re.sub('[^a-zA-z\s]', '', review)
     log('\n Punctuation removed')
     log(review)
     
-    
-    review = re.sub('_', '', review)
-
-    # Change any white space to one space
-    review = re.sub('\s+', ' ', review)
-      
-    # Remove start and end white spaces
-    review = review.strip()
-    #if review != '':
-   #         return review.lower()
-        
-       
     # lowercase    
     review = review.lower()
     
     # tokenize
     review = nltk.word_tokenize(review)
-    
-    ('\n Tokenized')
+    log('\n Tokenized')
     log(review)
     
-    # remove stop words and names
+    # remove stop words
     #review = [w for w in review if w not in stopwords.words("english")]
     review = [w for w in review if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
-    #review = [w for w in review if (w not in ([n for n in STOPWORDS_sentiment]))]
-    #review = [w for w in review if (w not in ([n for n in namelist]))]
-    #review = [w for w in review if w not in STOPWORDS_sentiment]
-    
-    
-    #for i, line in review:
-    #mgm_macau_reviews.review[i] = ' '.join([x for 
-   #     x in nltk.word_tokenize(line) if
-    #    (x.lower() not in STOPWORDS_sentiment) and ( x.lower() not in namelist )])
-    #print(i, line)
-
-
     log('\n Stop words removed')
     log(review)
     
@@ -715,7 +641,7 @@ def review_to_words(review):
     #log('\n Stemmed')
     #log(review)
     
-    #log('\n\n')
+    log('\n\n')
     #words=[]
     
     # Return final list of words
@@ -724,9 +650,10 @@ def review_to_words(review):
 
 
 
-
 import pickle
 import os
+
+
 
 
 cache_dir = os.path.join("Z:/MGM/My work/Python/bin/","cache", "sentiment_analysis")  # where to store cache files
@@ -773,13 +700,11 @@ def preprocess_data(data_train,data_test,
 
 
 
-#words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
-words_train, words_test= preprocess_data(mgm_macau_reviews["review"],mgm_cotai_reviews["review"])
+words_train, words_test= preprocess_data(mgm_macau_reviews.review,mgm_cotai_reviews.review)
+#words_train, words_test= preprocess_data(mgm_macau_reviews["review"],mgm_cotai_reviews["review"])
 
 
 os.remove (os.path.join(cache_dir,'preprocessed_mgm_reviewdata.pkl'))
-
-
 
 # Take a look at a sample
 print("\n--- Raw review ---")
@@ -812,40 +737,16 @@ print(mgm_cotai_reviews["sentiment"][1])
 
 
 
-
-
-
-
-
 """
 # Post-processing
 # Feature Extraction
-different methods comparison
-https://aiaspirant.com/bag-of-words/
-
-
 #Extracting Bag-of-Words 
 #Compute Bag-of-Words features¶
-
-ppt explaination see below
-https://www.geeksforgeeks.org/feature-extraction-techniques-nlp/
-
-
 https://dinghe.github.io/sentiment_analysis.html
 """
 
 
-
-
-
-
-
-
 """
-#
-#imbalance
-https://datauab.github.io/sentiment_predictions/
-
 resampling
 """
 from imblearn.combine import SMOTETomek
@@ -856,8 +757,7 @@ smt = SMOTETomek(sampling_strategy='auto')
 
 
 
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-
+from sklearn.feature_extraction.text import CountVectorizer
 import joblib
 #import sklearn.external.joblib as extjoblib
 
@@ -974,14 +874,10 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
     return features_train, features_test, vocabulary, y_smt,y2_smt
 
 
-#Extract Bag of Words features for both training and test datasets
+# Extract Bag of Words features for both training and test datasets
 
 #y=mgm_macau_reviews["sentiment"]
 #features_train, y = smt.fit_resample(features_train,y )
-
-
-from time import time
-t = time()
 
 
 features_train, features_test, vocabulary, y_smt,y2_smt = extract_BoW_features(words_train, words_test)
@@ -989,10 +885,6 @@ features_train, features_test, vocabulary, y_smt,y2_smt = extract_BoW_features(w
 
 os.remove (os.path.join(cache_dir,'bow_features.pkl'))
 
-duration = time() - t
-
-print("Time taken to extract features from training data : %f seconds" % (duration))
-print("n_samples: %d, n_features: %d" % features_train.shape)
 
 
 
@@ -1018,7 +910,7 @@ print(mgm_macau_reviews['review'][0])
 print("\n--- Preprocessed words ---")
 print(words_train[0])
 print("\n--- Bag-of-Words features ---")
-#print(features_train[0])
+print(features_train[0])
 print("\n--- Label ---")
 print(mgm_macau_reviews["sentiment"][1])
 
@@ -1073,19 +965,19 @@ plt.show()
 my_dpi =100
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 10), dpi=my_dpi)
 print(fig)
-print(ax)
+print(axes)
 
 # title for entire figure
 fig.suptitle('Before and After Resampling', fontsize=20)
 
 
 # edit subplots
-ax[0].set_title('Before', fontsize=14)
-ax[1].set_title('After', fontsize=14)
+axes[0].set_title('Before', fontsize=14)
+axes[1].set_title('After', fontsize=14)
 
 
 sns.countplot(mgm_macau_reviews['sentiment'], ax=ax[0])
-sns.countplot(pd.DataFrame(y_smt)['sentiment'], ax=ax[1])
+sns.countplot(x['sentiment'], ax=ax[1])
 
 
 
@@ -1104,9 +996,6 @@ features_train=pr.normalize(features_train, norm='l2',copy=False)
 features_test=pr.normalize(features_test, norm='l2',copy=False)
 
 #[index for index in features_train[5] if index != 0]
-
-
-
 
 
 
@@ -1267,98 +1156,17 @@ print(yhat)
 
 
 
-"""
-Combined Model
-https://datauab.github.io/sentiment_predictions/
-"""
-from prettytable import PrettyTable
 
-from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.svm import SVC
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-naiveBayes=GaussianNB()
-naiveBayes1 = MultinomialNB()
-SVM = SVC()
-randomForest = RandomForestClassifier(n_estimators=50)
-neuralNetwork = MLPClassifier()
 
-models = [naiveBayes, SVM, randomForest, neuralNetwork]
 
-conf_matrix = []
-acc = []
-reports = []
-
-# For each model we are going to fit the model with the x_train and y_train.
-for model in models:
-    model.fit(features_train, y_smt)
-    
-    # Predict 
-    predictions = model.predict(features_test)
-    
-    # Get the accuracy of the predictions that the model has made.
-    accuracy = round(accuracy_score(y2_smt, predictions)*100)
-    
-    # Save the confusion_matrix for each model
-    model_cm = confusion_matrix(y2_smt.values, predictions)
-    
-    # Save the classification_report for each model
-    report = classification_report(y2_smt, predictions)
-    
-    conf_matrix.append(model_cm)
-    acc.append(accuracy)
-    reports.append(report)
-
 
 
-model_accuracy = PrettyTable()
 
-model_accuracy.add_column("Model", ['Naive Bayes', 'SVM', 'Random Forest', 'Neural Network'])
-model_accuracy.add_column("Accuracy", acc)
-print(model_accuracy)
 
 
-def plot_confusionMatrix(conf_matrix):
-    plt.figure(figsize=(15,12))
-    
-    plt.subplot(2,2,1)
-    plt.title("Random Forest Confusion Matrix")
-    sns.heatmap(conf_matrix[2], annot = True, cmap="OrRd", fmt='.0f', cbar=False);
-    
-    plt.subplot(2,2,2)
-    plt.title("Neural Network Confusion Matrix")
-    sns.heatmap(conf_matrix[3], annot = True, cmap="OrRd", fmt='.0f',cbar=False);
-    
-    plt.show()   
-plot_confusionMatrix(conf_matrix)
 
-
-import scikitplot as skplt
-randomForest_prob = randomForest.predict_proba(features_train)
-neuralNetwork_prob = neuralNetwork.predict_proba(features_train)
-skplt.metrics.plot_roc(y_smt, randomForest_prob) 
-plt.title("Random Forest ROC Curves", fontsize=15)
-plt.show()
 
-skplt.metrics.plot_roc(y_smt, neuralNetwork_prob)
-plt.title("Neural Network ROC Curves", fontsize=15)
-plt.show()
-
-
-from sklearn.metrics import roc_auc_score
-print("AUC score for Random Forest: ", round((roc_auc_score(y_smt, randomForest_prob, multi_class='ovr')),2))
-print("AUC score for Neural Network: ", round((roc_auc_score(y_smt, neuralNetwork_prob, multi_class='ovr')),2))
-
-
-print("Random Forest Classification Report")
-print(reports[2])
-
-print("Neural Network Classification Report")
-print(reports[3])
 
 
 
@@ -1366,200 +1174,11 @@ print(reports[3])
 
 
 
-"""
-Validation
-"""
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "This hotel is noisy,hate, bad, slow, horrible,rude, pool is unavailable"
-
-true_sentiment = 'Negative'
 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat =naiveBayes.predict(my_features)
-print(yhat)
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = naiveBayes.predict(my_features)
-print(yhat)
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = naiveBayes.predict(my_features)
-print(yhat)
-
-
-
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "This hotel is noisy,hate, bad, slow, horrible,rude, pool is unavailable"
-
-true_sentiment = 'Negative'
 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat =SVM.predict(my_features)
-print(yhat)
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = SVM.predict(my_features)
-print(yhat)
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = SVM.predict(my_features)
-print(yhat)
-
-
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "This hotel is noisy,hate, bad, slow, horrible,rude, pool is unavailable"
-
-true_sentiment = 'Negative'
-
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat =neuralNetwork.predict(my_features)
-print(yhat)
-
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = neuralNetwork.predict(my_features)
-print(yhat)
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = neuralNetwork.predict(my_features)
-print(yhat)
-
-
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "This hotel is noisy, hate, bad, slow, horrible,rude, pool is unavailable"
-
-true_sentiment = 'Negative'
-
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat =randomForest.predict(my_features)
-print(yhat)
-
-
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "lovely stay, polite, passionate, professional, Thank you MGM"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = randomForest.predict(my_features)
-print(yhat)
-
-
-
-# TODO: Write a sample review and set its true sentiment
-my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
-true_sentiment = 'Positive' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = randomForest.predict(my_features)
-print(yhat)
-
-
-#https://www.tripadvisor.com/Hotel_Review-g664891-d604846-Reviews-Wynn_Macau-Macau.html#REVIEWS
-# TODO: Write a sample review and set its true sentiment
-#my_review = "Absolutely awful dreadful nasty nail service!"
-#my_review ="They hire uneducated people who clearly do not know what they are doing!"
-#my_review = "Each and every time it is horrible. N it is a disgrace! Shape up"
-#my_review ="it is a disgrace! Not the biggest problem I guess but for the $ they charge and it being wynn - "
-true_sentiment = 'Negative' 
-# TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
-my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-my_features = vectorizer.transform([my_words]).toarray()
-my_features = pr.normalize(my_features)
-# TODO: Then call your classifier to label it
-yhat = randomForest.predict(my_features)
-print(yhat)
+
+
+
 
 
 
@@ -1622,6 +1241,19 @@ model.add(LSTM(128))
 model.add(Dropout(0.2))
 model.add(Dense(1, activation='sigmoid'))
 print(model.summary())
+
+
+
+
+
+logisticRegression = LogisticRegression()
+naiveBayes = MultinomialNB()
+SVM = SVC()
+randomForest = RandomForestClassifier(n_estimators=50)
+neuralNetwork = MLPClassifier()
+
+models = [logisticRegression, naiveBayes, SVM, randomForest, neuralNetwork]
+
 
 
 
