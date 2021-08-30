@@ -39,6 +39,7 @@ https://blog.csdn.net/weixin_43579079/article/details/99324579
 
 
 
+
 """
 # Data collection
 """
@@ -381,6 +382,8 @@ fig.show()
 
 
 
+
+import seaborn as sns
 
 
 num_words = []
@@ -848,7 +851,7 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
         # NOTE: Training documents have already been preprocessed and tokenized into words;
         #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
         #vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=5000)
-        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=2000)
         features_train = vectorizer.fit_transform(words_train).toarray()
         # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
         features_test = vectorizer.fit_transform(words_test).toarray()
@@ -945,17 +948,17 @@ plt.show()
 
 
 #import seaborn as sns
-#target_count = mgm_macau_reviews['sentiment'].value_counts()
-#print("Positive:",  target_count[0])
-#print("Negative:",  target_count[1])
-#def plot_distributionCount(x, data):
-#    #plt.subplots(figsize=(6, 4))
-#    sns.countplot(x=x, data=data, order=data[x].value_counts().index, palette='icefire_r')
-#    plt.xlabel('Frequency')
-#    plt.tight_layout()
-#    plt.show()  
-#plot_distributionCount('sentiment',mgm_macau_reviews)
-#plot_distributionCount('sentiment',pd.DataFrame(y_smt))
+target_count = mgm_macau_reviews['sentiment'].value_counts()
+print("Positive:",  target_count[0])
+print("Negative:",  target_count[1])
+def plot_distributionCount(x, data):
+    #plt.subplots(figsize=(6, 4))
+    sns.countplot(x=x, data=data, order=data[x].value_counts().index, palette='icefire_r')
+    plt.xlabel('Frequency')
+    plt.tight_layout()
+    plt.show()  
+plot_distributionCount('sentiment',mgm_macau_reviews)
+plot_distributionCount('sentiment',pd.DataFrame(y_smt))
 
 
 
@@ -1056,18 +1059,17 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "Upon arrival we were welcomed by the staff and were upgraded to the Resort Suite. The room was just perfect for our anniversary.  The swimming pool and the spa are spotless. Wonderful interiors, helpful staffs and excellent service.  With the breakfast and the view of the hotel, it’s the best way to kick off our day."
+my_review = "This is our N time come to mgm cotai hotel, which i love to go to stay with family in Macau, front office attendant Rachel nice service and help us to prepare beautiful room and give two lion to our child’s"
 true_sentiment = 'Positive' 
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
 my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x))
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
 my_features = vectorizer.transform(my_words).toarray()
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf1.predict(my_features)
 print(yhat)
-
 
 
 
@@ -1126,7 +1128,7 @@ true_sentiment = 'Negative'
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
 my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x))
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
 my_features = vectorizer.transform(my_words).toarray()
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
@@ -1135,18 +1137,22 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "I was upgraded to a suite and to my surprise it was very spacious and the facilities were luxurious. Staff were polite, passionate and professional including those in the gym and the pool. Would definitely recommend this hotel for a luxury hotel experience. Two years ago I was involved in a credit card dispute with the Bellagio in Las Vegas.  While it was ultimately resolved in my favor, it was so frustrating and time-consuming dealing with that hotel that I swore I would never stay at an MGM branded hotel again.  Therefore, it was with some trepidation that I broke that vow and booked the MGM Macau, but I needn't have worried.  This hotel is five star through and through, and the staff was incredibly helpful and attentive.  If you had problems with the MGM hotels in Vegas don't let that deter you from booking the MGM Macau.  I would recommend this hotel to anybody I stayed one night with my family  Korean live in Hong Kong. We ve visited Macau several times but the staying at MGM Macau was really comfortable staying and unforgettable good memory.  Special thanks to Jason and his colleagues. Thank you much MGM Macau"
+my_review = ", pleasant . upgraded suite prepared baby amenities girl . wonderful staycation . Highly recommended ."
 true_sentiment = 'Positive' 
+
+
+my_review = "big room, amazing, spacious"
+true_sentiment = 'Positive' 
+
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
 my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x))
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
 my_features = vectorizer.transform(my_words).toarray()
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf2.predict(my_features)
 print(yhat)
-
 
 
 
