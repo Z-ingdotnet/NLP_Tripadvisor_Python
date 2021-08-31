@@ -40,6 +40,7 @@ https://blog.csdn.net/weixin_43579079/article/details/99324579
 
 
 
+
 """
 # Data collection
 """
@@ -103,9 +104,9 @@ from stop_words import safe_get_stop_words
 import nltk
 from nltk.corpus import stopwords
 from nltk import word_tokenize
-nltk.download('stopwords')
-nltk.download('punkt')
-nltk.download('names')
+#nltk.download('stopwords')
+#nltk.download('punkt')
+#nltk.download('names')
 #nltk.download([
 #"names",
 #"stopwords",
@@ -754,7 +755,7 @@ resampling
 """
 from imblearn.combine import SMOTETomek
 smt = SMOTETomek(sampling_strategy='auto')
-#smt = SMOTETomek(random_state=42)
+smt = SMOTETomek(random_state=42)
 
 
 
@@ -850,8 +851,8 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
         # TODO: Fit a vectorizer to training documents and use it to transform them
         # NOTE: Training documents have already been preprocessed and tokenized into words;
         #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
-        #vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=5000)
-        vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=2000)
+        vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=1000)
+        #vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
         features_train = vectorizer.fit_transform(words_train).toarray()
         # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
         features_test = vectorizer.fit_transform(words_test).toarray()
@@ -919,12 +920,32 @@ print(mgm_macau_reviews["sentiment"][1])
 
 
 
+#y=['desk super nice . great stepped lobby . Jason served , super friendly . upgraded , nice warm-hearted']
+#vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+#vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=2000)
 
-#[index for index in features_train[5] if index != 0]
+#xxx = vectorizer.fit_transform(y).toarray()
+
+
+
+#corpus = [
+#   'This is the first document.',
+#     'This document is the second document.',
+#     'And this is the third one.',
+#     'Is this the first document?',
+# ]
+#vectorizer = CountVectorizer()
+#X = vectorizer.fit_transform(corpus)
+#print(vectorizer.get_feature_names())
+#xxxx=(X.toarray())
+
+
+
+[index for index in features_train[1] if index != 0]
 
 
 # Plot the BoW feature vector for a training document
-plt.plot(features_train[5,:])
+plt.plot(features_train[67,:])
 plt.xlabel('Word')
 plt.ylabel('Count')
 plt.show()
@@ -942,6 +963,10 @@ plt.gca().set_yscale('log')
 plt.xlabel('Rank')
 plt.ylabel('Number of occurrences')
 plt.show()
+
+
+
+
 
 
 
@@ -1002,6 +1027,24 @@ features_test=pr.normalize(features_test, norm='l2',copy=False)
 
 
 
+"""
+#Pad sequences
+In order to feed this data into your RNN, all input documents must have the same length. Let's limit the maximum review length to max_words by truncating longer reviews and padding shorter reviews with a null value (0). You can accomplish this easily using the pad_sequences() function in Keras. For now, set max_words to 500.
+
+
+from keras.preprocessing import sequence
+
+# Set the maximum number of words per document (for both training and testing)
+max_words = 500
+
+# TODO: Pad sequences in X_train and X_test
+X_train = sequence.pad_sequences(X_train, maxlen=max_words)
+X_test = sequence.pad_sequences(X_test, maxlen=max_words)
+
+https://dinghe.github.io/sentiment_analysis.html
+"""
+
+
 
 
 
@@ -1059,19 +1102,18 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "This is our N time come to mgm cotai hotel, which i love to go to stay with family in Macau, front office attendant Rachel nice service and help us to prepare beautiful room and give two lion to our child’s"
+my_review = "Greet friendly staffs 4-hours flight heavy traffic . desk staffs friendly smiling . ordered cake advance celebrate boyfriend ’ birthday , arranged prepared addition souvenirs . recommended families travel , great people excellent hospitality feel welcomed . choose future ."
 true_sentiment = 'Positive' 
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
 my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
+#vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
+vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
 my_features = vectorizer.transform(my_words).toarray()
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf1.predict(my_features)
-print(yhat)
-
-
+print(yhat[-1])
 
 
 
@@ -1136,18 +1178,28 @@ yhat = clf2.predict(my_features)
 print(yhat)
 
 
+
 # TODO: Write a sample review and set its true sentiment
-my_review = ", pleasant . upgraded suite prepared baby amenities girl . wonderful staycation . Highly recommended ."
-true_sentiment = 'Positive' 
+my_review = "Covid-19 , decided staycations year . resident , prior . staycations , impressed . requested early check-in 12 ( package included + dining credit + breakfast ) . , prepared lions children bowl fruit . drinks minibar charge ! quiet sea view ! swimming pool welcoming , large , friendly offered water . House keeping towels changed swimming afternoon . dolphin lobby times , children absolutely enjoyed . , breakfast served , 2 adults + 2 children . , impressed , again.…"
+#my_review = "absolutely amazing,surprisingly confortable"
 
 
-my_review = "big room, amazing, spacious"
-true_sentiment = 'Positive' 
+true_sentiment = 'Positive'
+
 
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
 my_words = review_to_words(my_review)
-vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
+#vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
+#vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
+#vectorizer = CountVectorizer(preprocessor=lambda x: x, tokenizer=lambda x: x)
+
+
+vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=1000)
+#vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+features_train = vectorizer.fit_transform(words_train).toarray()
+        
+        
 my_features = vectorizer.transform(my_words).toarray()
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
@@ -1162,35 +1214,16 @@ print(yhat)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#corpus = [
+#   'This is the first document.',
+#     'This document is the second document.',
+#     'And this is the third one.',
+#     'Is this the first document?',
+# ]
+#vectorizer = CountVectorizer()
+#X = vectorizer.fit_transform(corpus)
+#print(vectorizer.get_feature_names())
+#xxxx=(X.toarray())
 
 
 
