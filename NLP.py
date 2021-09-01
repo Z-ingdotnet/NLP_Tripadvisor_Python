@@ -1167,6 +1167,8 @@ print("[{}] Accuracy: train = {}, test = {}".format(
 
 # TODO: Write a sample review and set its true sentiment
 my_review = "This hotel is noise,hate, bad, slow, horrible,rude, pool is unavailable"
+#my_review ="Requested for higher floor and end-up with 7 floors room~ Ok! Fine! It’s summer time and the pool is unavailable ~ Ok! Fine! Let’s take a look at the bathtub!! Unbelievable!! Look at those dirt, dust and hair!! No more MGM!! Never ever!!"
+
 true_sentiment = 'Negative'
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
@@ -1174,7 +1176,7 @@ my_words = review_to_words(my_review)
 vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
 my_features = vectorizer.transform(my_words).toarray()
 
-my_features = pr.normalize(my_features)
+#my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf2.predict(my_features)
 print(yhat)
@@ -1182,8 +1184,19 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "chose celebrate start summer holiday . availed Local package dining credit $ 800 practical family spending . , staffs informative answering inquiries ideas places . rooms spacious nice view overlooking Taipa island amazing amenities good Adults Kids alike . worth , surely recommend friends ."
-#my_review = "absolutely amazing,surprisingly confortable"
+#my_review = "chose celebrate start summer holiday . availed Local package dining credit $ 800 practical family spending . , staffs informative answering inquiries ideas places . rooms spacious nice view overlooking Taipa island amazing amenities good Adults Kids alike . worth , surely recommend friends ."
+#my_review ="Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
+#my_review = "Booked a staycation package for my birthday celebration this is. Such a great deal amongst the other 5 star hotels. Had my birthday lunch at Grill 58. Amazing seafood on ice and unforgettable steak 😍. The bread and butter is really unique. Never had such delicious bread and butter before. Had a surprise bday cake to end our perfect lunch. Thank u Joseph for the wonderful arrangements in the room and all the birthday surprises. Joseph was really attentive to my requests and provided an exceptional service.Had such a great and relaxing time there. The breakfast buffet was really good too. They serve quality food. Even had eggs benedicts (my fav). Siew mai and congee is soooo good. Drop by the pool before check out. Pool attendants were really attentive and nice. They serve little…"
+#my_review = "Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
+#my_review ="Some years ago we had a stay at MGM and were attracted by the giant aquarium. The colourful fishes and the coral reefs were so eye catching. We had a great stay there and got a little lion soft toy that we still keep.  This time we tried another MGM hotel at Cotai. Of course,Front desk attendant Daniel, good service and the decorations are spectacular and the atmosphere is so relaxing and comfortable.  What is the best is different cuisines are provided and they all offer good service and the staff are friendly too.  It’s really good to spend a relaxing holiday in this hotel. "
+#my_review ="Staff was extremely friendly and provided great service, stayed for one night with a friend and ate some in room dining. Their menu has a great variety of options including breakfast sets and also great quality of food. Would definitely choose MGM Cotai again. In addition the views from the room was also magnificent!"
+#my_review ="Stay here to celebrate my sister’s birthday, thank you for Ryan and Vita help me to upgrade my room and the wonderful arrangements for my sister. This is my third visit to this hotel, each time has wonderful and nice experience. I will come again, thank you to all the staff of MGM Cotai."
+
+
+
+#my_review ="Service were excellent! Ms.man's service are great!! Strongly recommend to stay here for special events or special dates. Janice Wong's store are great, especially the black seaseme ice cream! Must try item!"
+
+
 true_sentiment = 'Positive'
 
 
@@ -1197,7 +1210,7 @@ my_words=[my_words]
 #vectorizer = CountVectorizer(preprocessor=lambda x: x, tokenizer=lambda x: x)
 
 
-vectorizer = CountVectorizer(vocabulary=vocabulary,preprocessor=lambda x:x,tokenizer=lambda x:x)
+vectorizer = CountVectorizer(vocabulary=vocabulary,preprocessor=lambda x:x,tokenizer=lambda x:x, lowercase=True)
 
 #vectorizer = CountVectorizer(vocabulary=vocabulary,preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x))
 
@@ -1209,7 +1222,7 @@ my_features = vectorizer.fit_transform(my_words).toarray()
 #my_features = vectorizer.transform(my_words).toarray()
 #my_features = vectorizer.fit_transform(words_train).toarray()
 
-my_features = pr.normalize(my_features)
+#my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf2.predict(my_features)
 print(yhat)
@@ -1233,6 +1246,39 @@ for n in range(len(my_features[0:])):
 #X = vectorizer.fit_transform(corpus)
 #print(vectorizer.get_feature_names())
 #xxxx=(X.toarray())
+
+
+
+
+
+
+"""
+# Save your model, so that you can quickly load it in future (and perhaps resume training)
+model_file = "rnn_model.h5"  # HDF5 file
+model.save(os.path.join(cache_dir, model_file))
+
+pickle.dump(clf2, open("pima.pickle.dat", "wb"))
+
+print("Saved model to: pima.joblib.dat")
+ 
+# some time later...
+ 
+# load model from file
+loaded_model = load("pima.joblib.dat")
+print("Loaded model from: pima.joblib.dat")
+
+
+# Later you can load it using keras.models.load_model()
+from keras.models import load_model
+model = load_model(os.path.join(cache_dir, model_file))
+
+"""
+
+
+
+
+
+
 
 
 
@@ -1331,6 +1377,9 @@ app.layout = html.Div([
 app.run_server()
 
 
+
+C:\Users\119987\dash-sample-apps-main\dash-sample-apps-main\apps\dash-summarize
+python app.py
 
 #https://jsiwu94.github.io/Airlines-on-Twitter/
 #Customer sentiment:
