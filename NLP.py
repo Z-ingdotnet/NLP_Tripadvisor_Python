@@ -41,6 +41,7 @@ https://blog.csdn.net/weixin_43579079/article/details/99324579
 
 
 
+
 """
 # Data collection
 """
@@ -851,7 +852,7 @@ def extract_BoW_features(words_train, words_test, vocabulary_size=10000,
         # TODO: Fit a vectorizer to training documents and use it to transform them
         # NOTE: Training documents have already been preprocessed and tokenized into words;
         #       pass in dummy functions to skip those steps, e.g. preprocessor=lambda x: x
-        vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=1000)
+        vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=300)
         #vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
         features_train = vectorizer.fit_transform(words_train).toarray()
         # TODO: Apply the same vectorizer to transform the test documents (ignore unknown words)
@@ -1172,6 +1173,7 @@ true_sentiment = 'Negative'
 my_words = review_to_words(my_review)
 vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
 my_features = vectorizer.transform(my_words).toarray()
+
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf2.predict(my_features)
@@ -1180,27 +1182,33 @@ print(yhat)
 
 
 # TODO: Write a sample review and set its true sentiment
-my_review = "Covid-19 , decided staycations year . resident , prior . staycations , impressed . requested early check-in 12 ( package included + dining credit + breakfast ) . , prepared lions children bowl fruit . drinks minibar charge ! quiet sea view ! swimming pool welcoming , large , friendly offered water . House keeping towels changed swimming afternoon . dolphin lobby times , children absolutely enjoyed . , breakfast served , 2 adults + 2 children . , impressed , again.…"
+my_review = "chose celebrate start summer holiday . availed Local package dining credit $ 800 practical family spending . , staffs informative answering inquiries ideas places . rooms spacious nice view overlooking Taipa island amazing amenities good Adults Kids alike . worth , surely recommend friends ."
 #my_review = "absolutely amazing,surprisingly confortable"
-
-
 true_sentiment = 'Positive'
 
 
 
 # TODO: Apply the same preprocessing and vectorizing steps as you did for your training data
+
 my_words = review_to_words(my_review)
+my_words=[my_words]
 #vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: enumerate(x), tokenizer=lambda x: enumerate(x), lowercase=True)
 #vectorizer = CountVectorizer(vocabulary=vocabulary, preprocessor=lambda x: x, tokenizer=lambda x: x)
 #vectorizer = CountVectorizer(preprocessor=lambda x: x, tokenizer=lambda x: x)
 
 
-vectorizer = CountVectorizer(preprocessor=lambda x: x,tokenizer=lambda x: x, lowercase=True,max_features=1000)
-#vectorizer = CountVectorizer(preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
-features_train = vectorizer.fit_transform(words_train).toarray()
-        
-        
-my_features = vectorizer.transform(my_words).toarray()
+vectorizer = CountVectorizer(vocabulary=vocabulary,preprocessor=lambda x:x,tokenizer=lambda x:x)
+
+#vectorizer = CountVectorizer(vocabulary=vocabulary,preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x))
+
+
+#vectorizer = CountVectorizer(vocabulary=vocabulary,preprocessor=lambda x: enumerate(x),tokenizer=lambda x: enumerate(x), lowercase=True,max_features=1000)
+my_features = vectorizer.fit_transform(my_words).toarray()
+
+
+#my_features = vectorizer.transform(my_words).toarray()
+#my_features = vectorizer.fit_transform(words_train).toarray()
+
 my_features = pr.normalize(my_features)
 # TODO: Then call your classifier to label it
 yhat = clf2.predict(my_features)
@@ -1211,7 +1219,8 @@ print(yhat)
 
 
 
-
+for n in range(len(my_features[0:])):
+    print([index for index in my_features[0] if index != 0])
 
 
 #corpus = [
