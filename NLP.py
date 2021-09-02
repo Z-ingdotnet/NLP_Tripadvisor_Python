@@ -42,6 +42,7 @@ https://blog.csdn.net/weixin_43579079/article/details/99324579
 
 
 
+
 """
 # Data collection
 """
@@ -1230,8 +1231,6 @@ print(yhat)
 
 
 
-
-
 for n in range(len(my_features[0:])):
     print([index for index in my_features[0] if index != 0])
 
@@ -1252,26 +1251,79 @@ for n in range(len(my_features[0:])):
 
 
 
+
+
+
+
 """
+#https://machinelearningmastery.com/save-load-machine-learning-models-python-scikit-learn/
 # Save your model, so that you can quickly load it in future (and perhaps resume training)
 model_file = "rnn_model.h5"  # HDF5 file
 model.save(os.path.join(cache_dir, model_file))
 
-pickle.dump(clf2, open("pima.pickle.dat", "wb"))
+
+with open('Z:/MGM/My work/Python/bin/cache/sentiment_analysis', 'wb') as f:
+  pickle.dump(clf2, f)
+  
+pickle.dump(clf2, open("x.pickle.dat", "wb"))
 
 print("Saved model to: pima.joblib.dat")
  
+
+
+
+with open('Z:/MGM/My work/Python/bin/cache/sentiment_analysis', 'wb') as f:
+
+pickle.dump(vocabulary, open("vocabulary.dat", "wb"))
+
 # some time later...
  
+#import torch
 # load model from file
-loaded_model = load("pima.joblib.dat")
+#loaded_model = pickle.load("Z:/MGM/My work/Python/bin/cache/sentiment_analysis/pima.pickle.dat")
+
+loaded_model = pickle.load(open('Z:/MGM/My work/Python/bin/cache/sentiment_analysis/pima.pickle.dat', 'rb'))
+
 print("Loaded model from: pima.joblib.dat")
 
+vocabulary2 = pickle.load(open('Z:/MGM/My work/Python/bin/cache/sentiment_analysis/vocabulary.dat', 'rb'))
+    
 
 # Later you can load it using keras.models.load_model()
 from keras.models import load_model
 model = load_model(os.path.join(cache_dir, model_file))
 
+
+#Test
+print(loaded_model.predict(my_features))
+
+
+
+
+original_text ="Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
+
+def summarize2(original_text):
+    my_words=BeautifulSoup(original_text, "html5lib").get_text()
+
+    my_words = re.sub(r"[^a-zA-Z]", " ", my_words) 
+
+    my_words = my_words.lower()
+
+    my_words = nltk.word_tokenize(my_words)
+
+    my_words = [w for w in my_words if w not in STOPWORDS_sentiment and w not in ([n.lower() for n in namelist])]
+    
+    my_words = review_to_words(original_text)
+    #here
+    my_words2=my_words
+    #my_words2=','.join(str(e) for e in my_words)
+    my_words=[my_words]
+    vectorizer = CountVectorizer(vocabulary=vocabulary2,preprocessor=lambda x:x,tokenizer=lambda x:x, lowercase=True)
+    my_features = vectorizer.fit_transform(my_words).toarray()
+    yhat = loaded_model.predict(my_features)
+    return my_words2
+
+type(summarize2(original_text))
 """
 
 
