@@ -43,6 +43,7 @@ https://blog.csdn.net/weixin_43579079/article/details/99324579
 
 
 
+
 """
 # Data collection
 """
@@ -1186,7 +1187,7 @@ print(yhat)
 
 # TODO: Write a sample review and set its true sentiment
 #my_review = "chose celebrate start summer holiday . availed Local package dining credit $ 800 practical family spending . , staffs informative answering inquiries ideas places . rooms spacious nice view overlooking Taipa island amazing amenities good Adults Kids alike . worth , surely recommend friends ."
-#my_review ="Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
+my_review ="Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
 #my_review = "Booked a staycation package for my birthday celebration this is. Such a great deal amongst the other 5 star hotels. Had my birthday lunch at Grill 58. Amazing seafood on ice and unforgettable steak 😍. The bread and butter is really unique. Never had such delicious bread and butter before. Had a surprise bday cake to end our perfect lunch. Thank u Joseph for the wonderful arrangements in the room and all the birthday surprises. Joseph was really attentive to my requests and provided an exceptional service.Had such a great and relaxing time there. The breakfast buffet was really good too. They serve quality food. Even had eggs benedicts (my fav). Siew mai and congee is soooo good. Drop by the pool before check out. Pool attendants were really attentive and nice. They serve little…"
 #my_review = "Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
 #my_review ="Some years ago we had a stay at MGM and were attracted by the giant aquarium. The colourful fishes and the coral reefs were so eye catching. We had a great stay there and got a little lion soft toy that we still keep.  This time we tried another MGM hotel at Cotai. Of course,Front desk attendant Daniel, good service and the decorations are spectacular and the atmosphere is so relaxing and comfortable.  What is the best is different cuisines are provided and they all offer good service and the staff are friendly too.  It’s really good to spend a relaxing holiday in this hotel. "
@@ -1298,8 +1299,6 @@ model = load_model(os.path.join(cache_dir, model_file))
 print(loaded_model.predict(my_features))
 
 
-
-
 original_text ="Our room got upgraded with complimentary wine and fruits, spacious room and amenity controlled by smart technology, it’s a new experience. The facilities, like swimming pool and spa, are new and staff are kind and helpful."
 
 def summarize2(original_text):
@@ -1321,13 +1320,13 @@ def summarize2(original_text):
     vectorizer = CountVectorizer(vocabulary=vocabulary2,preprocessor=lambda x:x,tokenizer=lambda x:x, lowercase=True)
     my_features = vectorizer.fit_transform(my_words).toarray()
     yhat = loaded_model.predict(my_features)
+    #return format(my_words2)
     return my_words2
 
 type(summarize2(original_text))
+
+
 """
-
-
-
 
 
 
