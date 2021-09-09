@@ -996,19 +996,20 @@ plot_distributionCount('sentiment',pd.DataFrame(y_smt))
 my_dpi =100
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 10), dpi=my_dpi)
 print(fig)
-print(axes)
+#print(axes)
 
 # title for entire figure
 fig.suptitle('Before and After Resampling', fontsize=20)
 
 
 # edit subplots
-axes[0].set_title('Before', fontsize=14)
-axes[1].set_title('After', fontsize=14)
+ax[0].set_title('Before', fontsize=14)
+ax[1].set_title('After', fontsize=14)
 
 
 sns.countplot(mgm_macau_reviews['sentiment'], ax=ax[0])
-sns.countplot(x['sentiment'], ax=ax[1])
+sns.countplot(y_smt, ax=ax[1])
+
 
 
 
