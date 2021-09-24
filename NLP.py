@@ -581,7 +581,8 @@ def get_word_features(wordlist):
 
 
 
-
+combined_text_biggram = " ".join([review for review in features])   
+plt.imshow(mgm_macau_negreview_wc.generate(combined_text_biggram))
 
 
 
@@ -716,6 +717,8 @@ os.remove (os.path.join(cache_dir,'preprocessed_mgm_reviewdata.pkl'))
 # Take a look at a sample
 print("\n--- Raw review ---")
 print(mgm_macau_reviews['review'][0])
+print("\n--- Tokenized ---")    
+print(nltk.word_tokenize(mgm_macau_reviews['review'][0]))
 print("\n--- Preprocessed words ---")
 print(words_train[0])
 print("\n--- Label ---")
